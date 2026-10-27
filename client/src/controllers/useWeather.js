@@ -3,6 +3,7 @@ import { getWeather } from "../services/weatherService";
 
 export default function useWeather(cityName = "Nairobi") {
   const [weather, setWeather] = useState(null);
+  const [weatherCity, setWeatherCity] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -15,11 +16,13 @@ export default function useWeather(cityName = "Nairobi") {
     try {
       const data = await getWeather(cityName);
       setWeather(data);
+      setWeatherCity(cityName);
     } catch (err) {
       setError(
         err.response?.data?.error ||
         "Unable to load weather. Check that the backend is running."
       );
+      setWeatherCity(cityName);
     } finally {
       setLoading(false);
     }
@@ -34,10 +37,12 @@ export default function useWeather(cityName = "Nairobi") {
         if (!active) return;
 
         setWeather(data);
+        setWeatherCity(cityName);
         setError("");
       } catch (err) {
         if (!active) return;
 
+        setWeatherCity(cityName);
         setError(
           err.response?.data?.error ||
           "Unable to load weather. Check that the backend is running."
@@ -56,5 +61,12 @@ export default function useWeather(cityName = "Nairobi") {
     };
   }, [cityName]);
 
-  return { weather, loading, error, refresh };
+  const isCurrentCityLoaded = weatherCity === cityName;
+
+  return {
+    weather: isCurrentCityLoaded ? weather : null,
+    loading: Boolean(cityName) && (loading || !isCurrentCityLoaded),
+    error: isCurrentCityLoaded ? error : "",
+    refresh
+  };
 }

@@ -16,6 +16,7 @@ import WorldMap from "../components/map/WorldMap";
 import Loader from "../components/common/Loader";
 import ErrorMessage from "../components/common/ErrorMessage";
 import { formatTemperature } from "../utils/convertTemp";
+import useFavorites from "../controllers/useFavorites";
 
 const DEFAULT_CITIES = ["Tokyo", "London", "New York", "Paris"];
 
@@ -23,10 +24,18 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
   const navigate = useNavigate();
   const { unit } = useUnit();
   const { weather, loading, error, refresh } = useWeather(cityName);
+  const {
+    favorites: savedFavorites,
+    add: addSavedFavorite,
+    remove: removeSavedFavorite
+  } = useFavorites();
+  const token = localStorage.getItem("weatherworld_token");
 
   const [cityWeather, setCityWeather] = useState([]);
   const [citiesLoading, setCitiesLoading] = useState(false);
   const [citiesError, setCitiesError] = useState("");
+  const [favoriteError, setFavoriteError] = useState("");
+  const [favoriteAction, setFavoriteAction] = useState("");
   const [favorites, setFavorites] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("weatherworld_guest_favorites") || "[]");
@@ -68,8 +77,31 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
     };
   }, []);
 
-  function toggleFavorite(city) {
+  async function toggleFavorite(city, country = "") {
     const cityKey = city.toLowerCase();
+
+    if (token) {
+      const savedFavorite = savedFavorites.find(
+        (favorite) => favorite.city_name.toLowerCase() === cityKey
+      );
+
+      setFavoriteError("");
+      setFavoriteAction(cityKey);
+      try {
+        if (savedFavorite) {
+          await removeSavedFavorite(savedFavorite.id);
+        } else {
+          await addSavedFavorite(city, country);
+        }
+      } catch (err) {
+        setFavoriteError(
+          err.response?.data?.error || `Unable to update ${city} favorite.`
+        );
+      } finally {
+        setFavoriteAction("");
+      }
+      return;
+    }
 
     setFavorites((current) => {
       const next = current.includes(cityKey)
@@ -103,6 +135,7 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
       {loading && <Loader message={`Loading weather for ${cityName}...`} />}
 
       {!loading && <ErrorMessage message={error} onRetry={refresh} />}
+      <ErrorMessage message={favoriteError} />
 
       {weather && (
         <>
@@ -119,20 +152,27 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
 
             {cityWeather.map((item) => {
               const city = item.location.name;
+              const isFavorite = token
+                ? savedFavorites.some(
+                    (favorite) =>
+                      favorite.city_name.toLowerCase() === city.toLowerCase()
+                  )
+                : favorites.includes(city.toLowerCase());
 
               return (
                 <div key={`${city}-${item.location.country}`} style={{ position: "relative" }}>
                   <WeatherCard
                     weather={item}
                     onSelect={() => selectCity(city)}
-                    favorite={favorites.includes(city.toLowerCase())}
+                    favorite={isFavorite}
                   />
 
                   <button
                     className="icon-button"
-                    title={favorites.includes(city.toLowerCase()) ? "Remove favorite" : "Add favorite"}
+                    title={isFavorite ? "Remove favorite" : "Add favorite"}
                     aria-label={`Toggle ${city} favorite`}
-                    onClick={() => toggleFavorite(city)}
+                    onClick={() => toggleFavorite(city, item.location.country)}
+                    disabled={favoriteAction === city.toLowerCase()}
                     style={{
                       position: "absolute",
                       right: 10,
@@ -144,7 +184,7 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
                   >
                     <Heart
                       size={16}
-                      fill={favorites.includes(city.toLowerCase()) ? "#ffa52f" : "none"}
+                      fill={isFavorite ? "#ffa52f" : "none"}
                       color="#ffa52f"
                     />
                   </button>

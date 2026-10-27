@@ -63,8 +63,5 @@ app.use((req, res) => {
 });
 
 app.use(errorHandler);
-if (env.nodeEnv !== "test") {
-  require("./jobs/refreshWeatherJob").startWeatherRefreshJob();
-}
 
 module.exports = app;

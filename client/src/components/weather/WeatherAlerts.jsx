@@ -8,15 +8,21 @@ export default function WeatherAlerts({ alerts = [] }) {
       {alerts.length === 0 ? (
         <div className="empty-state">
           <AlertTriangle size={25} />
-          <p>No official alerts are available from the current weather provider.</p>
+          <p>No significant weather advisories were found in the 7-day forecast.</p>
           <p className="muted">
-            This does not confirm that no local weather warnings exist.
+            Forecast-based advisories are not a substitute for official local warnings.
           </p>
         </div>
       ) : (
         alerts.map((alert, index) => (
-          <div key={alert.id || index} className="error-message">
-            <strong>{alert.title}</strong>
+          <div
+            key={alert.id || index}
+            className={`weather-alert weather-alert--${alert.severity || "moderate"}`}
+          >
+            <strong>
+              <AlertTriangle size={17} />
+              {alert.title}
+            </strong>
             <p>{alert.description}</p>
           </div>
         ))

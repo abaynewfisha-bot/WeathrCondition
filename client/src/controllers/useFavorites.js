@@ -7,16 +7,15 @@ import {
 
 export default function useFavorites() {
   const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(
+    () => Boolean(localStorage.getItem("weatherworld_token"))
+  );
   const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
     const token = localStorage.getItem("weatherworld_token");
 
-    if (!token) {
-      setFavorites([]);
-      return;
-    }
+    if (!token) return;
 
     setLoading(true);
     setError("");
@@ -33,8 +32,26 @@ export default function useFavorites() {
   }, []);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    if (!localStorage.getItem("weatherworld_token")) return undefined;
+
+    let active = true;
+    getFavorites()
+      .then((savedFavorites) => {
+        if (active) setFavorites(savedFavorites);
+      })
+      .catch((err) => {
+        if (active) {
+          setError(err.response?.data?.error || "Unable to load favorites.");
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const add = async (cityName, country = "") => {
     const favorite = await addFavorite(cityName, country);

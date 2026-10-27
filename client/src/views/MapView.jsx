@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin } from "lucide-react";
+// import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import WorldMap from "../components/map/WorldMap";
 
@@ -20,7 +20,7 @@ export default function MapView() {
           Select a marker on the map to choose a city.
         </p>
 
-        <div style={{ height: "min(65vh, 650px)", borderRadius: 14, overflow: "hidden" }}>
+        <div className="map-view-container">
           <WorldMap onSelectCity={openCity} />
         </div>
 

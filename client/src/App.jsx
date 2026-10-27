@@ -91,7 +91,7 @@ function AppLayout() {
 
             <Route
               path="/alerts"
-              element={<AlertsView />}
+              element={<AlertsView cityName={selectedCity} />}
             />
 
             <Route

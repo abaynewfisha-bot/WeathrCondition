@@ -11,6 +11,15 @@
 
 <body>
   <div id="root"></div>
+  <script src="https://unpkg.com/leaflet@2.0.0-alpha.1/dist/leaflet-global.js"></script>
+  <script>
+    const map = new L.Map('map').setView([51.505, -0.09], 13);
+
+    const tiles = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+  </script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

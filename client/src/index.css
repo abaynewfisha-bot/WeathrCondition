@@ -383,6 +383,17 @@ a {
   background: var(--card);
 }
 
+.map-view-container {
+  height: min(65vh, 650px);
+  min-height: 360px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.map-view-container .map-container {
+  height: 100%;
+}
+
 .leaflet-container {
   width: 100%;
   height: 100%;
@@ -485,6 +496,45 @@ a {
   background: #3a2028;
   border-radius: 12px;
   margin: 14px 0;
+}
+
+.alert-search {
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.alert-search-field {
+  flex: 1;
+}
+
+.alert-search .primary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-alert {
+  margin: 12px 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 4px solid #e58b13;
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.weather-alert--high {
+  border-left-color: #e05252;
+}
+
+.weather-alert strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-alert p {
+  margin: 8px 0 0;
+  color: var(--muted);
 }
 
 .primary-button {
