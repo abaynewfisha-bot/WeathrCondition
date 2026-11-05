@@ -34,29 +34,29 @@ function AppLayout() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="min-h-screen bg-[var(--bg)]">
       <Navbar
         onSelectCity={selectCity}
         onLocate={requestLocation}
       />
 
-      <div className="layout">
+      <div className="grid min-h-[calc(100vh-82px)] grid-cols-1 min-[681px]:grid-cols-[175px_minmax(0,1fr)] min-[1051px]:grid-cols-[215px_minmax(0,1fr)]">
         <Sidebar />
 
-        <main className="main-content">
+        <main className="mx-auto w-full min-w-0 max-w-[1700px] p-[14px] min-[681px]:p-6">
           {locationError && (
-            <div className="panel" style={{ marginBottom: 16 }}>
-              <p className="muted">{locationError}</p>
+            <div className="mb-4 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+              <p className="text-[var(--muted)]">{locationError}</p>
             </div>
           )}
 
           {coordinates && (
-            <div className="panel" style={{ marginBottom: 16 }}>
+            <div className="mb-4 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
               <p>
                 Your coordinates: {coordinates.latitude.toFixed(4)},{" "}
                 {coordinates.longitude.toFixed(4)}
               </p>
-              <p className="muted">
+              <p className="text-[var(--muted)]">
                 To show weather for your exact coordinates, add a dedicated
                 coordinates endpoint to the backend.
               </p>

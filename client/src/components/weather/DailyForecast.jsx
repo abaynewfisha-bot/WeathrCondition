@@ -17,23 +17,23 @@ export default function DailyForecast({ weather }) {
   } = weather.daily;
 
   return (
-    <section className="panel section-spacing">
-      <h2 className="section-title">7-day forecast</h2>
-      <div className="forecast-grid">
+    <section className="mt-5 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+      <h2 className="mb-[18px] text-lg font-semibold">7-day forecast</h2>
+      <div className="grid grid-cols-[repeat(7,minmax(80px,1fr))] gap-[10px] overflow-x-auto">
         {time.map((day, index) => (
-          <div className="forecast-day" key={day}>
-            <div className="muted">{index === 0 ? "Today" : formatDay(day, { short: true })}</div>
-            <div className="forecast-icon" style={{ fontSize: 28 }}>
+          <div className="min-w-[80px] rounded-[14px] bg-[var(--card)] px-2 py-[15px] text-center" key={day}>
+            <div className="text-[var(--muted)]">{index === 0 ? "Today" : formatDay(day, { short: true })}</div>
+            <div className="my-3 text-[28px] text-[var(--accent)]">
               {getWeatherEmoji(weather_code[index])}
             </div>
-            <div title={getWeatherDescription(weather_code[index])} className="muted" style={{ fontSize: 11 }}>
+            <div title={getWeatherDescription(weather_code[index])} className="text-[11px] text-[var(--muted)]">
               {getWeatherDescription(weather_code[index])}
             </div>
-            <div className="forecast-temperature" style={{ marginTop: 12 }}>
+            <div className="mt-3 flex justify-center gap-2 font-semibold">
               <span>{formatTemperature(temperature_2m_max[index], unit)}°</span>
-              <span className="muted">{formatTemperature(temperature_2m_min[index], unit)}°</span>
+              <span className="text-[var(--muted)]">{formatTemperature(temperature_2m_min[index], unit)}°</span>
             </div>
-            <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+            <div className="mt-2 text-xs text-[var(--muted)]">
               Rain {precipitation_probability_max[index] ?? 0}%
             </div>
           </div>

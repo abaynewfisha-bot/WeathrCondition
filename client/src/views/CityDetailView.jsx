@@ -19,16 +19,15 @@ export default function CityDetailView() {
   return (
     <>
       <button
-        className="secondary-button"
+        className="mb-[18px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]"
         onClick={() => navigate(-1)}
-        style={{ marginBottom: 18 }}
       >
         <ArrowLeft size={17} />
         Back
       </button>
 
-      <h1 className="page-heading">
-        <MapPin size={22} style={{ display: "inline", marginRight: 8 }} />
+      <h1 className="mb-[18px] flex items-center gap-2 text-2xl font-bold">
+        <MapPin size={22} />
         {cityName} weather
       </h1>
 
@@ -41,7 +40,7 @@ export default function CityDetailView() {
           <HourlyForecast weather={weather} />
           <DailyForecast weather={weather} />
 
-          <div className="dashboard-lower">
+          <div className="mt-[18px] grid grid-cols-1 gap-4 min-[1051px]:grid-cols-2">
             <TemperatureChart weather={weather} />
             <PrecipitationChart weather={weather} />
           </div>

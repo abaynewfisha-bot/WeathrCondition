@@ -23,6 +23,7 @@ export function getWeatherAlerts(weather) {
       id: title,
       title,
       severity,
+      date: daily.time[index],
       description: `${getDescription(index)} Expected ${forecastDate(daily.time[index])}.`
     });
   };

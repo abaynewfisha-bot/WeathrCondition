@@ -123,10 +123,10 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
 
   return (
     <>
-      <div className="card-row" style={{ marginBottom: 16 }}>
-        <h1 className="page-heading" style={{ margin: 0 }}>Weather overview</h1>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h1 className="m-0 text-2xl font-bold">Weather overview</h1>
 
-        <button className="secondary-button" onClick={refresh}>
+        <button className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]" onClick={refresh}>
           <RefreshCw size={16} />
           Refresh
         </button>
@@ -141,13 +141,13 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
         <>
           <CurrentConditions weather={weather} />
 
-          <section className="city-grid" aria-label="Other cities">
+          <section className="mt-[18px] grid grid-cols-1 gap-[14px] min-[681px]:grid-cols-2 min-[1051px]:grid-cols-4" aria-label="Other cities">
             {citiesLoading && (
-              <div className="panel">Loading other cities...</div>
+              <div className="rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">Loading other cities...</div>
             )}
 
             {citiesError && (
-              <div className="panel muted">{citiesError}</div>
+              <div className="rounded-[20px] bg-[var(--panel)] p-4 text-[var(--muted)] sm:p-5">{citiesError}</div>
             )}
 
             {cityWeather.map((item) => {
@@ -160,7 +160,7 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
                 : favorites.includes(city.toLowerCase());
 
               return (
-                <div key={`${city}-${item.location.country}`} style={{ position: "relative" }}>
+                <div className="relative" key={`${city}-${item.location.country}`}>
                   <WeatherCard
                     weather={item}
                     onSelect={() => selectCity(city)}
@@ -168,19 +168,11 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
                   />
 
                   <button
-                    className="icon-button"
+                    className="absolute right-[10px] bottom-[10px] inline-flex min-h-[30px] items-center justify-center rounded-xl border-0 bg-transparent p-1.5 text-[var(--text)] hover:border-[var(--accent)]"
                     title={isFavorite ? "Remove favorite" : "Add favorite"}
                     aria-label={`Toggle ${city} favorite`}
                     onClick={() => toggleFavorite(city, item.location.country)}
                     disabled={favoriteAction === city.toLowerCase()}
-                    style={{
-                      position: "absolute",
-                      right: 10,
-                      bottom: 10,
-                      border: 0,
-                      minHeight: 30,
-                      padding: 6
-                    }}
                   >
                     <Heart
                       size={16}
@@ -193,11 +185,11 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
             })}
           </section>
 
-          <div className="dashboard-lower">
-            <section className="panel map-panel">
-              <div className="card-row">
-                <h2 className="section-title">World map</h2>
-                <button className="secondary-button" onClick={() => navigate("/map")}>
+          <div className="mt-[18px] grid grid-cols-1 gap-4 min-[1051px]:grid-cols-2">
+            <section className="min-h-[310px] min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="mb-[18px] text-lg font-semibold">World map</h2>
+                <button className="mb-[18px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]" onClick={() => navigate("/map")}>
                   Open map
                 </button>
               </div>
@@ -208,25 +200,24 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
             <TemperatureChart weather={weather} />
           </div>
 
-          <div className="dashboard-lower">
+          <div className="mt-[18px] grid grid-cols-1 gap-4 min-[1051px]:grid-cols-2">
             <DailyForecast weather={weather} />
             <PrecipitationChart weather={weather} />
           </div>
 
           <HourlyForecast weather={weather} />
 
-          <section className="panel section-spacing">
-            <h2 className="section-title">Quick city search</h2>
-            <p className="muted">
+          <section className="mt-5 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+            <h2 className="mb-[18px] text-lg font-semibold">Quick city search</h2>
+            <p className="text-[var(--muted)]">
               Select a city to open its current conditions and forecasts.
             </p>
 
-            <div className="city-ticker">
+            <div className="mt-[18px] flex flex-wrap gap-7">
               {["Dubai", "Riyadh", "Yakutsk", "Oslo", "Addis Ababa"].map((city) => (
                 <button
                   key={city}
-                  className="ticker-item"
-                  style={{ background: "transparent", border: 0 }}
+                  className="flex items-center gap-2 border-0 bg-transparent text-[var(--text)]"
                   onClick={() => selectCity(city)}
                 >
                   <MapPin size={16} color="#ffa52f" />
@@ -239,13 +230,13 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
       )}
 
       {!loading && !weather && !error && (
-        <div className="panel">
+        <div className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
           <p>Weather data is not available yet.</p>
         </div>
       )}
 
       {weather && (
-        <div className="muted section-spacing">
+        <div className="mt-5 text-[var(--muted)]">
           Current temperature: {formatTemperature(weather.current?.temperature_2m, unit)}°
         </div>
       )}

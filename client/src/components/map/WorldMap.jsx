@@ -35,10 +35,12 @@ function MapFocus({ coordinates }) {
   return null;
 }
 
-export default function WorldMap({ onSelectCity, coordinates, selectedCity }) {
+export default function WorldMap({ onSelectCity, coordinates, selectedCity, className = "" }) {
   const [cities, setCities] = useState(fallbackCities);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
+    const mapMountTimer = setTimeout(() => setMapReady(true), 0);
     let active = true;
 
     searchCities("a")
@@ -50,54 +52,59 @@ export default function WorldMap({ onSelectCity, coordinates, selectedCity }) {
       });
 
     return () => {
+      clearTimeout(mapMountTimer);
       active = false;
     };
   }, []);
 
   return (
-    <div className="map-container">
-      <MapContainer
-        center={[20, 0]}
-        zoom={2}
-        minZoom={2}
-        scrollWheelZoom
-        worldCopyJump
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+    <div className={`h-[280px] w-full overflow-hidden rounded-[14px] bg-[var(--card)] ${className}`}>
+      {mapReady && (
+        <MapContainer
+          center={[20, 0]}
+          zoom={2}
+          minZoom={2}
+          scrollWheelZoom
+          worldCopyJump
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapFocus coordinates={coordinates} />
 
-        <MapFocus coordinates={coordinates} />
+          {selectedCity && (
+            <CityMarker city={selectedCity} onSelect={onSelectCity} />
+          )}
 
-        {selectedCity && (
-          <CityMarker city={selectedCity} onSelect={onSelectCity} />
-        )}
-
-        {cities.map((city, index) => (
-          <CircleMarker
-            key={`${city.name}-${city.country}-${index}`}
-            center={[Number(city.latitude), Number(city.longitude)]}
-            radius={6}
-            pathOptions={{
-              color: "#ffa52f",
-              fillColor: "#ffa52f",
-              fillOpacity: 0.9
-            }}
-            eventHandlers={{
-              click: () => onSelectCity?.(city.name)
-            }}
-          >
-            <Popup>
-              <strong>{city.name}</strong>
-              <div>{city.country}</div>
-              <button onClick={() => onSelectCity?.(city.name)}>
-                View weather
-              </button>
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MapContainer>
+          {cities.map((city, index) => (
+            <CircleMarker
+              key={`${city.name}-${city.country}-${index}`}
+              center={[Number(city.latitude), Number(city.longitude)]}
+              radius={6}
+              pathOptions={{
+                color: "#ffa52f",
+                fillColor: "#ffa52f",
+                fillOpacity: 0.9
+              }}
+              eventHandlers={{
+                click: () => onSelectCity?.(city.name)
+              }}
+            >
+              <Popup>
+                <strong>{city.name}</strong>
+                <div>{city.country}</div>
+                <button
+                  className="mt-1.5 rounded-md bg-[var(--accent)] px-2 py-1 text-xs font-semibold text-[#151b26]"
+                  onClick={() => onSelectCity?.(city.name)}
+                >
+                  View weather
+                </button>
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
+      )}
     </div>
   );
-}       
+}

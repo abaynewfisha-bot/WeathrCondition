@@ -23,17 +23,18 @@ export default function MapView() {
 
   return (
     <>
-      <h1 className="page-heading">World weather map</h1>
+      <h1 className="mb-[18px] text-2xl font-bold">World weather map</h1>
 
-      <section className="panel">
-        <p className="muted">
+      <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+        <p className="text-[var(--muted)]">
           Search for a city to focus the map, or select a marker to view its forecast.
         </p>
 
         <CitySearchBar onSelect={openCity} />
 
-        <div className="map-view-container">
+        <div className="h-[min(65vh,650px)] min-h-[360px] overflow-hidden rounded-[14px]">
           <WorldMap
+            className="!h-full"
             onSelectCity={(city) => navigate(`/city/${encodeURIComponent(city)}`)}
             coordinates={selectedCity}
             selectedCity={selectedCity}
@@ -41,9 +42,9 @@ export default function MapView() {
         </div>
 
         {selectedCity && (
-          <div className="card-row" style={{ marginTop: 16 }}>
+          <div className="mt-4 flex items-center justify-between gap-3">
             <div>
-              <div className="muted">Selected city</div>
+              <div className="text-[var(--muted)]">Selected city</div>
               <strong>
                 {selectedCity.name}
                 {selectedCity.country ? `, ${selectedCity.country}` : ""}
@@ -51,7 +52,7 @@ export default function MapView() {
             </div>
 
             <button
-              className="primary-button"
+              className="rounded-[10px] bg-[var(--accent)] px-4 py-2.5 font-semibold text-[#151b26] hover:brightness-105"
               onClick={() => navigate(`/city/${encodeURIComponent(selectedCity.name)}`)}
             >
               View forecast

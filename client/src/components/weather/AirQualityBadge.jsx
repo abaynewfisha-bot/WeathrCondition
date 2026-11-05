@@ -1,7 +1,7 @@
 export default function AirQualityBadge({ value }) {
   if (value === undefined || value === null) {
     return (
-      <span className="muted">
+      <span className="text-[var(--muted)]">
         Air quality data unavailable
       </span>
     );
@@ -15,7 +15,7 @@ export default function AirQualityBadge({ value }) {
   if (value > 300) label = "Hazardous";
 
   return (
-    <span className="stat">
+    <span className="inline-flex items-center gap-[7px]">
       Air quality: <strong>{label}</strong> ({value})
     </span>
   );

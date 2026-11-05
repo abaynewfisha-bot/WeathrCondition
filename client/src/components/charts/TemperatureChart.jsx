@@ -17,7 +17,7 @@ export default function TemperatureChart({ weather }) {
   const { unit } = useUnit();
 
   if (!weather?.daily) {
-    return <div className="empty-state">Temperature data is unavailable.</div>;
+    return <div className="p-7 text-center text-[var(--muted)]">Temperature data is unavailable.</div>;
   }
 
   const daily = weather.daily;
@@ -29,10 +29,10 @@ export default function TemperatureChart({ weather }) {
   }));
 
   return (
-    <section className="panel">
-      <h2 className="section-title">Temperature trend, 7 days</h2>
+    <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+      <h2 className="mb-[18px] text-lg font-semibold">Temperature trend, 7 days</h2>
 
-      <div className="chart-container">
+      <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: -15 }}>
             <CartesianGrid stroke="#293a52" strokeDasharray="4 4" />
