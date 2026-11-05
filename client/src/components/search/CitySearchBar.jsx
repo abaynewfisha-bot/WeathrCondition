@@ -4,34 +4,51 @@ import { searchWeatherCities } from "../../services/weatherService";
 
 export default function CitySearchBar({ onSelect }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [searchState, setSearchState] = useState({
+    query: "",
+    results: [],
+    loading: false,
+    error: ""
+  });
+  const currentSearch = searchState.query === query.trim()
+    ? searchState
+    : { results: [], loading: false, error: "" };
+  const { results, loading, error } = currentSearch;
 
   useEffect(() => {
-    if (query.trim().length < 2) {
-      setResults([]);
-      setError("");
-      return;
-    }
+    const searchQuery = query.trim();
+    if (searchQuery.length < 2) return undefined;
 
     let active = true;
 
     const timer = setTimeout(async () => {
-      setLoading(true);
-      setError("");
+      setSearchState({
+        query: searchQuery,
+        results: [],
+        loading: true,
+        error: ""
+      });
 
       try {
-        const cities = await searchWeatherCities(query.trim());
+        const cities = await searchWeatherCities(searchQuery);
 
-        if (active) setResults(cities);
+        if (active) {
+          setSearchState({
+            query: searchQuery,
+            results: cities,
+            loading: false,
+            error: ""
+          });
+        }
       } catch {
         if (active) {
-          setResults([]);
-          setError("Could not search cities. Check your backend connection.");
+          setSearchState({
+            query: searchQuery,
+            results: [],
+            loading: false,
+            error: "Could not search cities. Check your backend connection."
+          });
         }
-      } finally {
-        if (active) setLoading(false);
       }
     }, 300);
 
@@ -47,8 +64,13 @@ export default function CitySearchBar({ onSelect }) {
       : city.name;
 
     setQuery(label);
-    setResults([]);
-    onSelect?.(city.name);
+    setSearchState({
+      query: "",
+      results: [],
+      loading: false,
+      error: ""
+    });
+    onSelect?.(city.name, city);
   };
 
   return (
@@ -60,7 +82,14 @@ export default function CitySearchBar({ onSelect }) {
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={(event) => {
-          if (event.key === "Escape") setResults([]);
+          if (event.key === "Escape") {
+            setSearchState({
+              query: "",
+              results: [],
+              loading: false,
+              error: ""
+            });
+          }
           if (event.key === "Enter" && results.length) chooseCity(results[0]);
         }}
         aria-label="Search any city"

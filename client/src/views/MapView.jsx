@@ -1,14 +1,24 @@
 import { useState } from "react";
-// import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import WorldMap from "../components/map/WorldMap";
+import CitySearchBar from "../components/search/CitySearchBar";
 
 export default function MapView() {
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState("Nairobi");
+  const [selectedCity, setSelectedCity] = useState(null);
 
-  const openCity = (city) => {
-    setSelectedCity(city);
+  const openCity = (cityName, city) => {
+    const latitude = Number(city?.latitude);
+    const longitude = Number(city?.longitude);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+    setSelectedCity({
+      ...city,
+      name: cityName,
+      latitude,
+      longitude
+    });
   };
 
   return (
@@ -17,26 +27,37 @@ export default function MapView() {
 
       <section className="panel">
         <p className="muted">
-          Select a marker on the map to choose a city.
+          Search for a city to focus the map, or select a marker to view its forecast.
         </p>
 
+        <CitySearchBar onSelect={openCity} />
+
         <div className="map-view-container">
-          <WorldMap onSelectCity={openCity} />
+          <WorldMap
+            onSelectCity={(city) => navigate(`/city/${encodeURIComponent(city)}`)}
+            coordinates={selectedCity}
+            selectedCity={selectedCity}
+          />
         </div>
 
-        <div className="card-row" style={{ marginTop: 16 }}>
-          <div>
-            <div className="muted">Selected city</div>
-            <strong>{selectedCity}</strong>
+        {selectedCity && (
+          <div className="card-row" style={{ marginTop: 16 }}>
+            <div>
+              <div className="muted">Selected city</div>
+              <strong>
+                {selectedCity.name}
+                {selectedCity.country ? `, ${selectedCity.country}` : ""}
+              </strong>
+            </div>
+
+            <button
+              className="primary-button"
+              onClick={() => navigate(`/city/${encodeURIComponent(selectedCity.name)}`)}
+            >
+              View forecast
+            </button>
           </div>
-
-          <button
-            className="primary-button"
-            onClick={() => navigate(`/city/${encodeURIComponent(selectedCity)}`)}
-          >
-            View forecast
-          </button>
-        </div>
+        )}
       </section>
     </>
   );

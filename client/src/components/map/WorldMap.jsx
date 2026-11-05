@@ -7,6 +7,7 @@ import {
   useMap
 } from "react-leaflet";
 import { searchCities } from "../../services/cityService";
+import CityMarker from "./CityMarker";
 
 const fallbackCities = [
   { name: "Nairobi", country: "Kenya", latitude: -1.2864, longitude: 36.8172 },
@@ -34,7 +35,7 @@ function MapFocus({ coordinates }) {
   return null;
 }
 
-export default function WorldMap({ onSelectCity, coordinates }) {
+export default function WorldMap({ onSelectCity, coordinates, selectedCity }) {
   const [cities, setCities] = useState(fallbackCities);
 
   useEffect(() => {
@@ -68,6 +69,10 @@ export default function WorldMap({ onSelectCity, coordinates }) {
         />
 
         <MapFocus coordinates={coordinates} />
+
+        {selectedCity && (
+          <CityMarker city={selectedCity} onSelect={onSelectCity} />
+        )}
 
         {cities.map((city, index) => (
           <CircleMarker
