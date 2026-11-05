@@ -155,12 +155,12 @@ export default function FavoritesView() {
       <ErrorMessage message={error} onRetry={refresh} />
 
       {!token && (
-        <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+        <section className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
           <Heart size={24} color="#ffa52f" />
           <h2 className="mt-3 mb-[18px] text-lg font-semibold">
             Guest favorites
           </h2>
-          <p className="text-[var(--muted)]">
+          <p className="text-[#91a5bf]">
             Guest favorites are saved in this browser. Sign in to save favorites
             to your PostgreSQL account.
           </p>
@@ -169,14 +169,14 @@ export default function FavoritesView() {
             <label className="min-w-[160px] flex-1">
               <span className="sr-only">City to add to favorites</span>
               <input
-                className="w-full rounded-[15px] border border-transparent bg-[var(--card)] px-4 py-[15px] text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                className="w-full rounded-[15px] border border-transparent bg-[#172438] px-4 py-[15px] text-[#e7edf7] outline-none focus:border-[#ffa52f]"
                 value={guestCityInput}
                 onChange={(event) => setGuestCityInput(event.target.value)}
                 placeholder="Enter a city name"
               />
             </label>
             <button
-              className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--accent)] px-4 py-2.5 font-semibold text-[#151b26] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-[#ffa52f] px-4 py-2.5 font-semibold text-[#151b26] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
               type="submit"
               disabled={!guestCityInput.trim()}
             >
@@ -186,7 +186,7 @@ export default function FavoritesView() {
           </form>
 
           <button
-            className="mb-3 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mb-3 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f] disabled:cursor-not-allowed disabled:opacity-60"
             onClick={loadGuestWeather}
             disabled={guestLoading || guestFavorites.length === 0}
           >
@@ -194,7 +194,7 @@ export default function FavoritesView() {
           </button>
 
           {guestFavorites.length === 0 && (
-            <p className="p-7 text-center text-[var(--muted)]">
+            <p className="p-7 text-center text-[#91a5bf]">
               No guest favorites yet. Add a city above or use the heart buttons on the dashboard.
             </p>
           )}
@@ -219,7 +219,7 @@ export default function FavoritesView() {
                 )}
                 {weatherError && <ErrorMessage message={weatherError} />}
                 <button
-                  className="mt-2 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]"
+                  className="mt-2 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
                   onClick={() => {
                     const nextFavorites = guestFavorites.filter(
                       (favorite) => favorite.toLowerCase() !== city.toLowerCase()
@@ -241,7 +241,7 @@ export default function FavoritesView() {
 
           {guestFavorites.length > 0 && (
             <button
-              className="mt-[14px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]"
+              className="mt-[14px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
               onClick={() => {
                 localStorage.removeItem("weatherworld_guest_favorites");
                 setGuestFavorites([]);
@@ -256,9 +256,9 @@ export default function FavoritesView() {
       )}
 
       {token && (
-        <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+        <section className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
           {favorites.length === 0 && !loading ? (
-            <div className="flex flex-col items-center p-7 text-center text-[var(--muted)]">
+            <div className="flex flex-col items-center p-7 text-center text-[#91a5bf]">
               <Heart size={28} />
               <p>No saved favorites yet.</p>
             </div>
@@ -287,7 +287,7 @@ export default function FavoritesView() {
                       )}
 
                       <button
-                        className="mt-2 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]"
+                        className="mt-2 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
                         onClick={() => remove(favorite.id)}
                       >
                         <Trash2 size={15} />

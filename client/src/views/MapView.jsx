@@ -25,8 +25,8 @@ export default function MapView() {
     <>
       <h1 className="mb-[18px] text-2xl font-bold">World weather map</h1>
 
-      <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
-        <p className="text-[var(--muted)]">
+      <section className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
+        <p className="text-[#91a5bf]">
           Search for a city to focus the map, or select a marker to view its forecast.
         </p>
 
@@ -44,7 +44,7 @@ export default function MapView() {
         {selectedCity && (
           <div className="mt-4 flex items-center justify-between gap-3">
             <div>
-              <div className="text-[var(--muted)]">Selected city</div>
+              <div className="text-[#91a5bf]">Selected city</div>
               <strong>
                 {selectedCity.name}
                 {selectedCity.country ? `, ${selectedCity.country}` : ""}
@@ -52,7 +52,7 @@ export default function MapView() {
             </div>
 
             <button
-              className="rounded-[10px] bg-[var(--accent)] px-4 py-2.5 font-semibold text-[#151b26] hover:brightness-105"
+              className="rounded-[10px] bg-[#ffa52f] px-4 py-2.5 font-semibold text-[#151b26] hover:brightness-105"
               onClick={() => navigate(`/city/${encodeURIComponent(selectedCity.name)}`)}
             >
               View forecast

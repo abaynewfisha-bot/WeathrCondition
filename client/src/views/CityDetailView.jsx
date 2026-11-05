@@ -19,7 +19,7 @@ export default function CityDetailView() {
   return (
     <>
       <button
-        className="mb-[18px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]"
+        className="mb-[18px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
         onClick={() => navigate(-1)}
       >
         <ArrowLeft size={17} />

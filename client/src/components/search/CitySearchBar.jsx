@@ -74,10 +74,10 @@ export default function CitySearchBar({ onSelect }) {
   };
 
   return (
-    <div className="relative min-w-[100px] flex-1">
-      <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" size={19} />
+    <div className="relative">
+      <Search className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#91a5bf]" size={19} />
       <input
-        className="w-full rounded-[15px] border border-transparent bg-[var(--card)] py-[15px] pl-[46px] pr-[18px] text-[var(--text)] outline-none focus:border-[var(--accent)]"
+        className="min-h-[42px] w-full rounded-xl border border-[#293a52] bg-[#172438] py-[10px] pl-[42px] pr-[14px] text-[#e7edf7] outline-none placeholder:text-[#91a5bf] focus:border-[#ffa52f]"
         placeholder="Search any city"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
@@ -97,14 +97,14 @@ export default function CitySearchBar({ onSelect }) {
       />
 
       {(loading || results.length > 0 || error) && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[1000] max-h-80 overflow-y-auto rounded-[14px] border border-[var(--border)] bg-[var(--panel)] shadow-[0_15px_40px_#0005]">
-          {loading && <div className="flex w-full flex-col gap-1 bg-transparent px-4 py-3 text-left">Searching...</div>}
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[1000] overflow-hidden rounded-xl border border-[#293a52] bg-[#111d30] shadow-xl">
+          {loading && <div className="px-[14px] py-[11px] text-[#e7edf7]">Searching...</div>}
 
-          {error && <div className="flex w-full flex-col gap-1 bg-transparent px-4 py-3 text-left">{error}</div>}
+          {error && <div className="px-[14px] py-[11px] text-[#e7edf7]">{error}</div>}
 
           {results.map((city, index) => (
             <button
-              className="flex w-full flex-col gap-1 bg-transparent px-4 py-3 text-left text-[var(--text)] hover:bg-[var(--card)]"
+              className="flex w-full items-center justify-between border-0 bg-transparent px-[14px] py-[11px] text-left text-[#e7edf7] hover:bg-[#172438]"
               key={`${city.name}-${city.country}-${index}`}
               onClick={() => chooseCity(city)}
             >
@@ -112,14 +112,14 @@ export default function CitySearchBar({ onSelect }) {
                 <MapPin size={16} />
                 {city.name}
               </span>
-              <span className="text-xs text-[var(--muted)]">
+              <span className="text-xs text-[#91a5bf]">
                 {[city.admin1, city.country].filter(Boolean).join(", ")}
               </span>
             </button>
           ))}
 
           {!loading && !error && results.length === 0 && query.trim().length >= 2 && (
-            <div className="flex w-full flex-col gap-1 bg-transparent px-4 py-3 text-left">No cities found.</div>
+            <div className="px-[14px] py-[11px] text-[#e7edf7]">No cities found.</div>
           )}
         </div>
       )}

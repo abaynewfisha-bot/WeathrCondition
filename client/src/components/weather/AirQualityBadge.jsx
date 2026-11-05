@@ -1,7 +1,7 @@
 export default function AirQualityBadge({ value }) {
   if (value === undefined || value === null) {
     return (
-      <span className="text-[var(--muted)]">
+      <span className="text-[#91a5bf]">
         Air quality data unavailable
       </span>
     );

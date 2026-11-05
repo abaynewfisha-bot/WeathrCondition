@@ -13,11 +13,15 @@ import { useUnit } from "../../context/UnitContext";
 import { convertTemp } from "../../utils/convertTemp";
 import { formatDay } from "../../utils/formatDate";
 
-export default function TemperatureChart({ weather }) {
+export default function TemperatureChart({ weather, compact = false }) {
   const { unit } = useUnit();
 
   if (!weather?.daily) {
-    return <div className="p-7 text-center text-[var(--muted)]">Temperature data is unavailable.</div>;
+    return (
+      <div className="rounded-2xl bg-[#172438] p-5 text-center text-[#91a5bf]">
+        Temperature data is unavailable.
+      </div>
+    );
   }
 
   const daily = weather.daily;
@@ -29,10 +33,10 @@ export default function TemperatureChart({ weather }) {
   }));
 
   return (
-    <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
-      <h2 className="mb-[18px] text-lg font-semibold">Temperature trend, 7 days</h2>
+    <section className={`min-w-0 rounded-[20px] bg-[#172438] p-4 sm:p-5 ${compact ? "h-full" : ""}`}>
+      <h2 className="mb-[18px] text-base font-semibold">Temperature trend, 7 days</h2>
 
-      <div className="h-[280px] w-full">
+      <div className={`w-full ${compact ? "h-[205px]" : "h-[280px]"}`}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: -15 }}>
             <CartesianGrid stroke="#293a52" strokeDasharray="4 4" />

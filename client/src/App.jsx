@@ -34,13 +34,13 @@ function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <Navbar
         onSelectCity={selectCity}
         onLocate={requestLocation}
       />
 
-      <div className="grid min-h-[calc(100vh-82px)] grid-cols-1 min-[681px]:grid-cols-[175px_minmax(0,1fr)] min-[1051px]:grid-cols-[215px_minmax(0,1fr)]">
+      <div className="grid min-h-[calc(100vh-82px)] grid-cols-1 min-[681px]:grid-cols-[145px_minmax(0,1fr)] min-[1051px]:grid-cols-[175px_minmax(0,1fr)]">
         <Sidebar />
 
         <main className="mx-auto w-full min-w-0 max-w-[1700px] p-[14px] min-[681px]:p-6">

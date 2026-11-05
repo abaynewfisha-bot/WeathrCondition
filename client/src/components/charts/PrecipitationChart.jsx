@@ -14,7 +14,7 @@ export default function PrecipitationChart({ weather }) {
   const daily = weather?.daily;
 
   if (!daily) {
-    return <div className="p-7 text-center text-[var(--muted)]">Precipitation data is unavailable.</div>;
+    return <div className="p-7 text-center text-[#91a5bf]">Precipitation data is unavailable.</div>;
   }
 
   const data = (daily.time || []).map((date, index) => ({
@@ -23,7 +23,7 @@ export default function PrecipitationChart({ weather }) {
   }));
 
   return (
-    <section className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+    <section className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
       <h2 className="mb-[18px] text-lg font-semibold">Rain probability</h2>
 
       <div className="h-[280px] w-full">

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import useWeather from "../controllers/useWeather";
 import { getWeather } from "../services/weatherService";
-import { useUnit } from "../context/UnitContext";
 
 import CurrentConditions from "../components/weather/CurrentConditions";
 import WeatherCard from "../components/weather/WeatherCard";
@@ -15,14 +14,12 @@ import PrecipitationChart from "../components/charts/PrecipitationChart";
 import WorldMap from "../components/map/WorldMap";
 import Loader from "../components/common/Loader";
 import ErrorMessage from "../components/common/ErrorMessage";
-import { formatTemperature } from "../utils/convertTemp";
 import useFavorites from "../controllers/useFavorites";
 
 const DEFAULT_CITIES = ["Tokyo", "London", "New York", "Paris"];
 
 export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
   const navigate = useNavigate();
-  const { unit } = useUnit();
   const { weather, loading, error, refresh } = useWeather(cityName);
   const {
     favorites: savedFavorites,
@@ -123,15 +120,6 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h1 className="m-0 text-2xl font-bold">Weather overview</h1>
-
-        <button className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]" onClick={refresh}>
-          <RefreshCw size={16} />
-          Refresh
-        </button>
-      </div>
-
       {loading && <Loader message={`Loading weather for ${cityName}...`} />}
 
       {!loading && <ErrorMessage message={error} onRetry={refresh} />}
@@ -139,15 +127,26 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
 
       {weather && (
         <>
-          <CurrentConditions weather={weather} />
+          <div className="relative">
+            <CurrentConditions weather={weather} compact />
+            <button
+              className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-[#0b1422]/50 text-white backdrop-blur transition hover:bg-[#0b1422]/80"
+              onClick={refresh}
+              disabled={loading}
+              aria-label="Refresh weather"
+              title="Refresh weather"
+            >
+              <RefreshCw className={loading ? "animate-spin" : ""} size={16} />
+            </button>
+          </div>
 
-          <section className="mt-[18px] grid grid-cols-1 gap-[14px] min-[681px]:grid-cols-2 min-[1051px]:grid-cols-4" aria-label="Other cities">
+          <section className="mt-[14px] grid grid-cols-2 gap-[10px] min-[681px]:grid-cols-4" aria-label="Other cities">
             {citiesLoading && (
-              <div className="rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">Loading other cities...</div>
+              <div className="col-span-full rounded-[15px] bg-[#111d30] p-4 text-[#91a5bf]">Loading other cities...</div>
             )}
 
             {citiesError && (
-              <div className="rounded-[20px] bg-[var(--panel)] p-4 text-[var(--muted)] sm:p-5">{citiesError}</div>
+              <div className="col-span-full rounded-[15px] bg-[#111d30] p-4 text-[#91a5bf]">{citiesError}</div>
             )}
 
             {cityWeather.map((item) => {
@@ -160,15 +159,16 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
                 : favorites.includes(city.toLowerCase());
 
               return (
-                <div className="relative" key={`${city}-${item.location.country}`}>
+                <div className="relative min-w-0" key={`${city}-${item.location.country}`}>
                   <WeatherCard
                     weather={item}
                     onSelect={() => selectCity(city)}
                     favorite={isFavorite}
+                    compact
                   />
 
                   <button
-                    className="absolute right-[10px] bottom-[10px] inline-flex min-h-[30px] items-center justify-center rounded-xl border-0 bg-transparent p-1.5 text-[var(--text)] hover:border-[var(--accent)]"
+                    className="absolute bottom-2 right-2 inline-flex min-h-[30px] items-center justify-center rounded-xl border-0 bg-transparent p-1.5"
                     title={isFavorite ? "Remove favorite" : "Add favorite"}
                     aria-label={`Toggle ${city} favorite`}
                     onClick={() => toggleFavorite(city, item.location.country)}
@@ -185,59 +185,48 @@ export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
             })}
           </section>
 
-          <div className="mt-[18px] grid grid-cols-1 gap-4 min-[1051px]:grid-cols-2">
-            <section className="min-h-[310px] min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+          <div className="mt-[14px] grid grid-cols-1 items-stretch gap-[14px] min-[1051px]:grid-cols-2">
+            <section className="min-w-0 rounded-[20px] bg-[#172438] p-4 sm:p-5">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="mb-[18px] text-lg font-semibold">World map</h2>
-                <button className="mb-[18px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-3 text-[var(--text)] hover:border-[var(--accent)]" onClick={() => navigate("/map")}>
+                <h2 className="mb-[18px] text-base font-semibold">World map</h2>
+                <button className="mb-[18px] inline-flex min-h-[36px] items-center justify-center gap-2 rounded-lg border border-[#293a52] px-3 text-xs text-[#91a5bf] hover:border-[#ffa52f]" onClick={() => navigate("/map")}>
                   Open map
                 </button>
               </div>
 
-              <WorldMap onSelectCity={selectCity} />
+              <WorldMap onSelectCity={selectCity} compact />
             </section>
 
-            <TemperatureChart weather={weather} />
+            <TemperatureChart weather={weather} compact />
           </div>
 
-          <div className="mt-[18px] grid grid-cols-1 gap-4 min-[1051px]:grid-cols-2">
-            <DailyForecast weather={weather} />
-            <PrecipitationChart weather={weather} />
-          </div>
-
-          <HourlyForecast weather={weather} />
-
-          <section className="mt-5 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
-            <h2 className="mb-[18px] text-lg font-semibold">Quick city search</h2>
-            <p className="text-[var(--muted)]">
-              Select a city to open its current conditions and forecasts.
-            </p>
-
-            <div className="mt-[18px] flex flex-wrap gap-7">
-              {["Dubai", "Riyadh", "Yakutsk", "Oslo", "Addis Ababa"].map((city) => (
+          <section className="mt-[14px] flex min-w-0 flex-wrap items-center gap-x-6 gap-y-3 rounded-[15px] bg-[#172438] px-4 py-3" aria-label="Quick city search">
+            {["Dubai", "Riyadh", "Yakutsk", "Oslo", "Addis Ababa"].map((city) => (
                 <button
                   key={city}
-                  className="flex items-center gap-2 border-0 bg-transparent text-[var(--text)]"
+                  className="flex items-center gap-2 border-0 bg-transparent p-0 text-sm font-medium text-[#e7edf7] hover:text-[#ffa52f]"
                   onClick={() => selectCity(city)}
                 >
                   <MapPin size={16} color="#ffa52f" />
                   {city}
                 </button>
               ))}
+          </section>
+
+          <section className="mt-6" aria-label="Detailed forecast">
+            <h2 className="mb-3 text-lg font-semibold">Forecast details</h2>
+            <div className="grid grid-cols-1 gap-4 min-[1051px]:grid-cols-2">
+              <DailyForecast weather={weather} />
+              <PrecipitationChart weather={weather} />
             </div>
+            <HourlyForecast weather={weather} />
           </section>
         </>
       )}
 
       {!loading && !weather && !error && (
-        <div className="min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+        <div className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
           <p>Weather data is not available yet.</p>
-        </div>
-      )}
-
-      {weather && (
-        <div className="mt-5 text-[var(--muted)]">
-          Current temperature: {formatTemperature(weather.current?.temperature_2m, unit)}°
         </div>
       )}
     </>

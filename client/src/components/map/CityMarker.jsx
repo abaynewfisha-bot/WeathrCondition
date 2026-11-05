@@ -26,7 +26,7 @@ export default function CityMarker({ city, onSelect }) {
         <strong>{city.name}</strong>
         {city.country && <div>{city.country}</div>}
         <button
-          className="mt-1.5 rounded-md bg-[var(--accent)] px-2 py-1 text-xs font-semibold text-[#151b26]"
+          style={{ marginTop: 6 }}
           onClick={() => onSelect?.(city.name)}
         >
           View weather

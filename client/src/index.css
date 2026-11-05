@@ -31,6 +31,42 @@ body.light-theme {
   --active-nav: #fff0d7;
 }
 
+body.light-theme [class*="bg-[#080f1d]"] {
+  background-color: var(--bg) !important;
+}
+
+body.light-theme [class*="bg-[#111d30]"] {
+  background-color: var(--panel) !important;
+}
+
+body.light-theme [class*="bg-[#172438]"] {
+  background-color: var(--card) !important;
+}
+
+body.light-theme [class*="bg-[#3b2c16]"] {
+  background-color: var(--active-nav) !important;
+}
+
+body.light-theme [class*="border-[#293a52]"] {
+  border-color: var(--border) !important;
+}
+
+body.light-theme [class*="text-[#e7edf7]"] {
+  color: var(--text) !important;
+}
+
+body.light-theme [class*="text-[#91a5bf]"] {
+  color: var(--muted) !important;
+}
+
+body.light-theme [class*="text-[#ffa52f]"] {
+  color: var(--accent) !important;
+}
+
+body.light-theme [class*="hover:border-[#293a52]"]:hover {
+  border-color: var(--border) !important;
+}
+
 @layer base {
   html,
   body,
@@ -45,21 +81,4 @@ body.light-theme {
   button {
     @apply cursor-pointer;
   }
-
-  button:disabled {
-    @apply cursor-not-allowed opacity-60;
-  }
-}
-
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  background: #172438;
-  z-index: 1;
-}
-
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background: #172438;
-  color: #e7edf7;
 }
