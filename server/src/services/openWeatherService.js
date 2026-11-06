@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const http = axios.create({
-  timeout: 15000,
+  timeout: 10000,
   headers: {
     Accept: "application/json"
   }
