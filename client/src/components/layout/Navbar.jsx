@@ -1,6 +1,5 @@
 import { MapPin } from "lucide-react";
 import CitySearchBar from "../search/CitySearchBar";
-import UnitToggle from "../common/UnitToggle";
 import ThemeToggle from "../common/ThemeToggle";
 
 export default function Navbar({ onSelectCity, onLocate, cityName = "Nairobi" }) {
@@ -20,7 +19,6 @@ export default function Navbar({ onSelectCity, onLocate, cityName = "Nairobi" })
           <MapPin size={18} fill="white" />
           {cityName}, Kenya
         </button>
-        <UnitToggle />
         <ThemeToggle />
       </div>
     </header>

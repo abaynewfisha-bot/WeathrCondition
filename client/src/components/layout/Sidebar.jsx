@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { Bell, CloudSun, Heart, Home, Map } from "lucide-react";
+import { CloudSun, Heart, Home, Info, Map, MapPin, Settings } from "lucide-react";
 
 const links = [
   { to: "/", label: "Home", icon: Home, end: true },
-  { to: "/map", label: "Map", icon: Map },
+  { to: "/city/Nairobi", label: "Cities", icon: MapPin },
   { to: "/favorites", label: "Favorites", icon: Heart },
-  { to: "/alerts", label: "Alerts", icon: Bell }
+  { to: "/map", label: "Map", icon: Map },
+  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/about", label: "About", icon: Info }
 ];
 
 export default function Sidebar() {
@@ -34,6 +36,15 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <div className="mt-auto hidden min-[681px]:block">
+        <div className="mx-auto mb-3 flex h-[125px] w-[125px] items-center justify-center rounded-full bg-[radial-gradient(circle_at_55%_45%,#63b8ff_0_20%,#1d72a8_21%_38%,#1a3e70_39%_48%,#4dadd7_49%_58%,transparent_59%)] shadow-[0_-8px_25px_rgba(255,255,255,.12)]" aria-label="World globe illustration">
+          <span className="h-[72px] w-[72px] rounded-full border border-white/20 bg-[linear-gradient(145deg,#58a9d8,#1d5d88)] shadow-inner" />
+        </div>
+        <div className="rounded-[14px] px-3 py-3 text-center text-sm font-medium leading-5 text-[#d8e7ff]">
+          Live Weather<br />Worldwide 🌤
+        </div>
+      </div>
     </aside>
   );
 }

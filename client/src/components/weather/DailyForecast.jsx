@@ -33,8 +33,8 @@ export default function DailyForecast({ weather }) {
               {getWeatherDescription(weather_code[index])}
             </div>
             <div className="mt-3 flex justify-center gap-2 text-sm font-semibold">
-              <span>{formatTemperature(temperature_2m_max[index], unit)}°</span>
-              <span className="text-[#91a5bf]">{formatTemperature(temperature_2m_min[index], unit)}°</span>
+              <span>{formatTemperature(temperature_2m_max[index], unit)}</span>
+              <span className="text-[#91a5bf]">{formatTemperature(temperature_2m_min[index], unit)}</span>
             </div>
             <div className="mt-2 text-xs text-[#91a5bf]">
               Rain {precipitation_probability_max[index] ?? 0}%

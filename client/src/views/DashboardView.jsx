@@ -10,7 +10,7 @@ import { formatHour } from "../utils/formatDate";
 import { formatTemperature } from "../utils/convertTemp";
 import { useUnit } from "../context/UnitContext";
 
-export default function DashboardView({ cityName = "Nairobi", onSelectCity }) {
+export default function DashboardView({ cityName = "Nairobi" }) {
   const { weather, loading, error, refresh } = useWeather(cityName);
   const { unit } = useUnit();
 

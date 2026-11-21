@@ -29,7 +29,7 @@ export default function HourlyForecast({ weather }) {
               <div className="my-2 text-[25px]">
                 {getWeatherEmoji(weather.current?.weather_code)}
               </div>
-              <strong>{formatTemperature(temperature_2m[i], unit)}°</strong>
+              <strong>{formatTemperature(temperature_2m[i], unit)}</strong>
               <div className={`mt-2 flex items-center justify-center gap-1 text-xs ${index === 0 ? "text-white/75" : "text-[#718197]"}`}>
                 <Droplets size={13} />{" "}
                 {precipitation_probability[i] ?? 0}%
