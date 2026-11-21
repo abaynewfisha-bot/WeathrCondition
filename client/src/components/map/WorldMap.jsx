@@ -51,6 +51,15 @@ function MapClick({ onMapClick }) {
 
 export default function WorldMap({ onSelectCity, onMapClick, coordinates, selectedCity, className = "", compact = false }) {
   const [cities, setCities] = useState(fallbackCities);
+  const [mapReady, setMapReady] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setMapReady(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -71,55 +80,57 @@ export default function WorldMap({ onSelectCity, onMapClick, coordinates, select
     <div className={`w-full overflow-hidden rounded-[14px] bg-[#172438] ${
       compact ? "h-[220px]" : "h-[280px]"
     } ${className}`}>
-      <MapContainer
-        className="h-full w-full"
-        center={[20, 0]}
-        zoom={2}
-        minZoom={2}
-        scrollWheelZoom
-        worldCopyJump
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapFocus coordinates={coordinates} />
-        <MapClick onMapClick={onMapClick} />
+      {mapReady && (
+        <MapContainer
+          className="h-full w-full"
+          center={[20, 0]}
+          zoom={2}
+          minZoom={2}
+          scrollWheelZoom
+          worldCopyJump
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapFocus coordinates={coordinates} />
+          <MapClick onMapClick={onMapClick} />
 
-        {selectedCity && (
-          <CityMarker city={selectedCity} onSelect={onSelectCity} />
-        )}
+          {selectedCity && (
+            <CityMarker city={selectedCity} onSelect={onSelectCity} />
+          )}
 
-        {cities.map((city, index) => (
-          <CircleMarker
-            key={`${city.name}-${city.country}-${index}`}
-            center={[Number(city.latitude), Number(city.longitude)]}
-            radius={6}
-            pathOptions={{
-              color: "#ffa52f",
-              fillColor: "#ffa52f",
-              fillOpacity: 0.9
-            }}
-            eventHandlers={{
-              click: (event) => {
-                event.originalEvent?.stopPropagation();
-                onSelectCity?.(city.name, city);
-              }
-            }}
-          >
-            <Popup>
-              <strong>{city.name}</strong>
-              <div>{city.country}</div>
-              <button
-                className="mt-1.5 rounded-md bg-[#ffa52f] px-2 py-1 text-xs font-semibold text-[#151b26]"
-                onClick={() => onSelectCity?.(city.name, city)}
-              >
-                View weather
-              </button>
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MapContainer>
+          {cities.map((city, index) => (
+            <CircleMarker
+              key={`${city.name}-${city.country}-${index}`}
+              center={[Number(city.latitude), Number(city.longitude)]}
+              radius={6}
+              pathOptions={{
+                color: "#ffa52f",
+                fillColor: "#ffa52f",
+                fillOpacity: 0.9
+              }}
+              eventHandlers={{
+                click: (event) => {
+                  event.originalEvent?.stopPropagation();
+                  onSelectCity?.(city.name, city);
+                }
+              }}
+            >
+              <Popup>
+                <strong>{city.name}</strong>
+                <div>{city.country}</div>
+                <button
+                  className="mt-1.5 rounded-md bg-[#ffa52f] px-2 py-1 text-xs font-semibold text-[#151b26]"
+                  onClick={() => onSelectCity?.(city.name, city)}
+                >
+                  View weather
+                </button>
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
+      )}
     </div>
   );
 }
