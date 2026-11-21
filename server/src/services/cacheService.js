@@ -2,7 +2,7 @@ const City = require("../models/City");
 const WeatherReading = require("../models/WeatherReading");
 const provider = require("./openWeatherService");
 
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_TTL_MS = 1 * 60 * 1000;
 
 async function getWeather(cityName) {
   const matches = await provider.searchCities(cityName);
