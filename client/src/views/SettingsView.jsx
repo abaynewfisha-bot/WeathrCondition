@@ -112,7 +112,7 @@ export default function SettingsView() {
 
         <PreferenceRow
           icon={<MapPin size={20} className="text-[#74a4eb]" />}
-          title="Location preferences"
+          title={t("locationPreferences")}
           description="Allow WeatherWorld to use your device location."
           enabled={locationEnabled}
           onToggle={saveLocation}
