@@ -62,8 +62,7 @@ export default function CityDetailView() {
               "Unable to load weather for these coordinates."
           });
         }
-      })
-      ;
+      });
 
     return () => {
       active = false;
