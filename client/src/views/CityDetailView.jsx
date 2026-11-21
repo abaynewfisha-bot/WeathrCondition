@@ -27,57 +27,87 @@ export default function CityDetailView() {
     Number.isFinite(latitude) &&
     Number.isFinite(longitude);
   const cityWeather = useWeather(hasCoordinates ? "" : cityName);
-  const [coordinateWeather, setCoordinateWeather] = useState(null);
-  const [coordinateLoading, setCoordinateLoading] = useState(false);
-  const [coordinateError, setCoordinateError] = useState("");
+  const coordinateKey = hasCoordinates ? `${latitude},${longitude}` : "";
+  const [coordinateResult, setCoordinateResult] = useState({
+    key: "",
+    weather: null,
+    loading: false,
+    error: ""
+  });
 
   useEffect(() => {
     if (!hasCoordinates) return undefined;
 
     let active = true;
-    setCoordinateLoading(true);
-    setCoordinateError("");
 
     getWeatherByCoordinates(latitude, longitude)
       .then((weather) => {
-        if (active) setCoordinateWeather(weather);
+        if (active) {
+          setCoordinateResult({
+            key: coordinateKey,
+            weather,
+            loading: false,
+            error: ""
+          });
+        }
       })
       .catch((err) => {
         if (active) {
-          setCoordinateError(
-            err.response?.data?.error ||
+          setCoordinateResult({
+            key: coordinateKey,
+            weather: null,
+            loading: false,
+            error:
+              err.response?.data?.error ||
               "Unable to load weather for these coordinates."
-          );
+          });
         }
       })
-      .finally(() => {
-        if (active) setCoordinateLoading(false);
-      });
+      ;
 
     return () => {
       active = false;
     };
-  }, [hasCoordinates, latitude, longitude]);
+  }, [coordinateKey, hasCoordinates, latitude, longitude]);
 
+  const coordinateResultMatches = coordinateResult.key === coordinateKey;
+  const coordinateWeather = coordinateResultMatches
+    ? coordinateResult.weather
+    : null;
+  const coordinateLoading = hasCoordinates &&
+    (coordinateResult.loading || !coordinateResultMatches);
+  const coordinateError = coordinateResultMatches
+    ? coordinateResult.error
+    : "";
   const weather = hasCoordinates ? coordinateWeather : cityWeather.weather;
   const loading = hasCoordinates ? coordinateLoading : cityWeather.loading;
   const error = hasCoordinates ? coordinateError : cityWeather.error;
   const refresh = hasCoordinates
     ? () => {
-        setCoordinateLoading(true);
-        setCoordinateError("");
+        setCoordinateResult((current) => ({
+          ...current,
+          key: coordinateKey,
+          loading: true,
+          error: ""
+        }));
         getWeatherByCoordinates(latitude, longitude)
           .then((result) => {
-            setCoordinateWeather(result);
+            setCoordinateResult({
+              key: coordinateKey,
+              weather: result,
+              loading: false,
+              error: ""
+            });
           })
           .catch((err) => {
-            setCoordinateError(
-              err.response?.data?.error ||
+            setCoordinateResult({
+              key: coordinateKey,
+              weather: null,
+              loading: false,
+              error:
+                err.response?.data?.error ||
                 "Unable to load weather for these coordinates."
-            );
-          })
-          .finally(() => {
-            setCoordinateLoading(false);
+            });
           });
       }
     : cityWeather.refresh;
