@@ -5,7 +5,7 @@ export default function UnitToggle() {
 
   return (
     <button
-      className="min-h-[38px] rounded-xl border border-[#344860] bg-transparent px-3 text-sm text-[#c8d3e2] hover:border-[#ffa52f]"
+      className="min-h-[44px] rounded-full border-0 bg-[linear-gradient(135deg,#d18d2d,#d46d83)] px-3 text-sm font-bold text-white"
       onClick={toggleUnit}
       aria-label="Change temperature unit"
     >

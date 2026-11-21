@@ -42,6 +42,7 @@ function AppLayout() {
           <Navbar
             onSelectCity={selectCity}
             onLocate={requestLocation}
+            cityName={selectedCity}
           />
 
           <main className="mx-auto w-full min-w-0 max-w-[1700px] p-[14px] min-[681px]:p-5">
@@ -108,6 +109,7 @@ function AppLayout() {
 
           <Footer />
         </main>
+        </div>
       </div>
     </div>
   );

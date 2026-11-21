@@ -1,4 +1,4 @@
-import { Droplets, Gauge, MapPin, Wind } from "lucide-react";
+import { Droplets, Eye, MapPin, Wind } from "lucide-react";
 import { useUnit } from "../../context/UnitContext";
 import { formatTemperature } from "../../utils/convertTemp";
 import { getWeatherDescription } from "../../utils/weatherCodes";
@@ -70,8 +70,8 @@ export default function CurrentConditions({ weather, compact = false }) {
           <span><strong className="block">{windValue}</strong><small className="block text-white/70">Wind Speed</small></span>
         </span>
         <span className="flex items-center justify-center gap-2 text-sm">
-          <Gauge size={20} className="text-[#7dc8d1]" />
-          <span><strong className="block">{Math.round(current.surface_pressure)} hPa</strong><small className="block text-white/70">Pressure</small></span>
+          <Eye size={20} className="text-[#7dc8d1]" />
+          <span><strong className="block">{Math.round((current.visibility ?? 10000) / 1000)} km</strong><small className="block text-white/70">Visibility</small></span>
         </span>
       </div>
     </section>

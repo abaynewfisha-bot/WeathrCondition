@@ -24,7 +24,7 @@ export default function DailyForecast({ weather }) {
       </div>
       <div className="grid grid-cols-2 gap-3 min-[681px]:grid-cols-4 min-[1051px]:grid-cols-7">
         {time.map((day, index) => (
-          <div className="min-w-0 rounded-xl bg-[#172438] p-3 text-center" key={day}>
+          <div className="min-w-0 border-r border-[#ecedf3] p-3 text-center last:border-r-0" key={day}>
             <div className="text-xs text-[#91a5bf]">{index === 0 ? "Today" : formatDay(day, { short: true })}</div>
             <div className="my-2 text-[28px]">
               {getWeatherEmoji(weather_code[index])}
