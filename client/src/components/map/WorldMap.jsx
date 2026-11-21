@@ -4,7 +4,8 @@ import {
   MapContainer,
   Popup,
   TileLayer,
-  useMap
+  useMap,
+  useMapEvents
 } from "react-leaflet";
 import { searchCities } from "../../services/cityService";
 import CityMarker from "./CityMarker";
@@ -35,7 +36,20 @@ function MapFocus({ coordinates }) {
   return null;
 }
 
-export default function WorldMap({ onSelectCity, coordinates, selectedCity, className = "", compact = false }) {
+function MapClick({ onMapClick }) {
+  useMapEvents({
+    click(event) {
+      onMapClick?.({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng
+      });
+    }
+  });
+
+  return null;
+}
+
+export default function WorldMap({ onSelectCity, onMapClick, coordinates, selectedCity, className = "", compact = false }) {
   const [cities, setCities] = useState(fallbackCities);
 
   useEffect(() => {
@@ -70,6 +84,7 @@ export default function WorldMap({ onSelectCity, coordinates, selectedCity, clas
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapFocus coordinates={coordinates} />
+        <MapClick onMapClick={onMapClick} />
 
         {selectedCity && (
           <CityMarker city={selectedCity} onSelect={onSelectCity} />
@@ -86,7 +101,10 @@ export default function WorldMap({ onSelectCity, coordinates, selectedCity, clas
               fillOpacity: 0.9
             }}
             eventHandlers={{
-              click: () => onSelectCity?.(city.name)
+              click: (event) => {
+                event.originalEvent?.stopPropagation();
+                onSelectCity?.(city.name, city);
+              }
             }}
           >
             <Popup>
@@ -94,7 +112,7 @@ export default function WorldMap({ onSelectCity, coordinates, selectedCity, clas
               <div>{city.country}</div>
               <button
                 className="mt-1.5 rounded-md bg-[#ffa52f] px-2 py-1 text-xs font-semibold text-[#151b26]"
-                onClick={() => onSelectCity?.(city.name)}
+                onClick={() => onSelectCity?.(city.name, city)}
               >
                 View weather
               </button>

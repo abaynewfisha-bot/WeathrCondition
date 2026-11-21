@@ -3,10 +3,12 @@ import { formatTemperature } from "../../utils/convertTemp";
 import { formatDay } from "../../utils/formatDate";
 import { getWeatherDescription, getWeatherEmoji } from "../../utils/weatherCodes";
 import { useLanguage } from "../../context/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
 export default function DailyForecast({ weather }) {
   const { unit } = useUnit();
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   if (!weather?.daily) return null;
 
@@ -18,15 +20,36 @@ export default function DailyForecast({ weather }) {
     precipitation_probability_max = []
   } = weather.daily;
 
+  const forecastPath = () => {
+    const name = encodeURIComponent(weather.location?.name || "Nairobi");
+    const latitude = Number(weather.location?.latitude);
+    const longitude = Number(weather.location?.longitude);
+
+    return Number.isFinite(latitude) && Number.isFinite(longitude)
+      ? `/city/${name}?lat=${latitude}&lng=${longitude}`
+      : `/city/${name}`;
+  };
+
   return (
     <section className="min-w-0 rounded-[18px] bg-white p-4 text-[#17243a] sm:p-5">
       <div className="mb-[14px] flex items-center justify-between">
         <h2 className="text-lg font-bold">{t("sevenDay")}</h2>
-        <button className="text-xs font-bold text-[#9a52a6]">{t("viewDetails")} →</button>
+        <button
+          type="button"
+          className="text-xs font-bold text-[#9a52a6]"
+          onClick={() => navigate(forecastPath())}
+        >
+          {t("viewDetails")} →
+        </button>
       </div>
       <div className="grid grid-cols-2 gap-3 min-[681px]:grid-cols-4 min-[1051px]:grid-cols-7">
         {time.map((day, index) => (
-          <div className="min-w-0 border-r border-[#ecedf3] p-3 text-center last:border-r-0" key={day}>
+          <button
+            type="button"
+            className="min-w-0 border-r border-[#ecedf3] p-3 text-center last:border-r-0"
+            key={day}
+            onClick={() => navigate(forecastPath())}
+          >
             <div className="text-xs text-[#91a5bf]">{index === 0 ? t("today") : formatDay(day, { short: true })}</div>
             <div className="my-2 text-[28px]">
               {getWeatherEmoji(weather_code[index])}
@@ -41,7 +64,7 @@ export default function DailyForecast({ weather }) {
             <div className="mt-2 text-xs text-[#91a5bf]">
               Rain {precipitation_probability_max[index] ?? 0}%
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </section>

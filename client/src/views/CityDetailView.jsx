@@ -1,4 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowLeft, MapPin } from "lucide-react";
 
 import useWeather from "../controllers/useWeather";
@@ -9,12 +10,73 @@ import HourlyForecast from "../components/weather/HourlyForecast";
 import DailyForecast from "../components/weather/DailyForecast";
 import TemperatureChart from "../components/charts/TemperatureChart";
 import PrecipitationChart from "../components/charts/PrecipitationChart";
+import { getWeatherByCoordinates } from "../services/weatherService";
 
 export default function CityDetailView() {
   const { city } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const cityName = decodeURIComponent(city || "Nairobi");
-  const { weather, loading, error, refresh } = useWeather(cityName);
+  const latitudeParam = searchParams.get("lat");
+  const longitudeParam = searchParams.get("lng");
+  const latitude = Number(latitudeParam);
+  const longitude = Number(longitudeParam);
+  const hasCoordinates =
+    latitudeParam !== null &&
+    longitudeParam !== null &&
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude);
+  const cityWeather = useWeather(hasCoordinates ? "" : cityName);
+  const [coordinateWeather, setCoordinateWeather] = useState(null);
+  const [coordinateLoading, setCoordinateLoading] = useState(false);
+  const [coordinateError, setCoordinateError] = useState("");
+
+  useEffect(() => {
+    if (!hasCoordinates) return undefined;
+
+    let active = true;
+    setCoordinateLoading(true);
+    setCoordinateError("");
+
+    getWeatherByCoordinates(latitude, longitude)
+      .then((weather) => {
+        if (active) setCoordinateWeather(weather);
+      })
+      .catch((err) => {
+        if (active) {
+          setCoordinateError(
+            err.response?.data?.error ||
+              "Unable to load weather for these coordinates."
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setCoordinateLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [hasCoordinates, latitude, longitude]);
+
+  const weather = hasCoordinates ? coordinateWeather : cityWeather.weather;
+  const loading = hasCoordinates ? coordinateLoading : cityWeather.loading;
+  const error = hasCoordinates ? coordinateError : cityWeather.error;
+  const refresh = hasCoordinates
+    ? () => {
+        setCoordinateLoading(true);
+        setCoordinateError("");
+        getWeatherByCoordinates(latitude, longitude)
+          .then((result) => setCoordinateWeather(result))
+          .catch((err) =>
+            setCoordinateError(
+              err.response?.data?.error ||
+                "Unable to load weather for these coordinates."
+            )
+          )
+          .finally(() => setCoordinateLoading(false));
+      }
+    : cityWeather.refresh;
 
   return (
     <>

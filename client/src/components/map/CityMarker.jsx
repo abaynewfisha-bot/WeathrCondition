@@ -19,7 +19,10 @@ export default function CityMarker({ city, onSelect }) {
         weight: 2
       }}
       eventHandlers={{
-        click: () => onSelect?.(city.name)
+        click: (event) => {
+          event.originalEvent?.stopPropagation();
+          onSelect?.(city.name, city);
+        }
       }}
     >
       <Popup>

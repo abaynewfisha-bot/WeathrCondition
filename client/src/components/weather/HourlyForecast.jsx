@@ -4,10 +4,12 @@ import { formatTemperature } from "../../utils/convertTemp";
 import { formatHour } from "../../utils/formatDate";
 import { getWeatherEmoji } from "../../utils/weatherCodes";
 import { useLanguage } from "../../context/LanguageContext";
+import { useState } from "react";
 
 export default function HourlyForecast({ weather }) {
   const { unit } = useUnit();
   const { t } = useLanguage();
+  const [showNextTwelve, setShowNextTwelve] = useState(false);
 
   if (!weather?.hourly) return null;
 
@@ -20,9 +22,18 @@ export default function HourlyForecast({ weather }) {
 
   return (
     <section className="min-w-0 rounded-[18px] bg-white p-4 text-[#17243a] sm:p-5">
-      <h2 className="mb-[14px] text-lg font-bold">{t("hourlyForecast")}</h2>
+      <div className="mb-[14px] flex items-center justify-between">
+        <h2 className="text-lg font-bold">{t("hourlyForecast")}</h2>
+        <button
+          type="button"
+          className="text-xs font-bold text-[#4d78c8]"
+          onClick={() => setShowNextTwelve((current) => !current)}
+        >
+          {showNextTwelve ? "Next 12 Hours" : "Next 6 Hours"}
+        </button>
+      </div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {time.slice(start, start + 12).map((hour, index) => {
+        {time.slice(start, start + (showNextTwelve ? 12 : 6)).map((hour, index) => {
           const i = start + index;
 
           return (

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CloudSun, Compass, Droplets, MapPin, Wind } from "lucide-react";
 import WorldMap from "../components/map/WorldMap";
 import CitySearchBar from "../components/search/CitySearchBar";
-import useWeather from "../controllers/useWeather";
+import { getWeatherByCoordinates } from "../services/weatherService";
 import { useUnit } from "../context/UnitContext";
 import { formatTemperature } from "../utils/convertTemp";
 import { getWeatherDescription } from "../utils/weatherCodes";
@@ -12,9 +12,45 @@ import { useLanguage } from "../context/LanguageContext";
 export default function MapView() {
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [mapWeatherLoading, setMapWeatherLoading] = useState(false);
+  const [mapWeatherError, setMapWeatherError] = useState("");
   const { unit } = useUnit();
   const { t } = useLanguage();
-  const { weather } = useWeather(selectedCity?.name || "Nairobi");
+
+  useEffect(() => {
+    if (!selectedCity) return undefined;
+
+    let active = true;
+    setMapWeatherLoading(true);
+    setMapWeatherError("");
+
+    getWeatherByCoordinates(selectedCity.latitude, selectedCity.longitude)
+      .then((result) => {
+        if (!active) return;
+        setWeather(result);
+        setSelectedCity((current) => ({
+          ...current,
+          name: result.location?.name || current.name,
+          country: result.location?.country || current.country,
+          timezone: result.location?.timezone || current.timezone
+        }));
+      })
+      .catch((err) => {
+        if (!active) return;
+        setWeather(null);
+        setMapWeatherError(
+          err.response?.data?.error || "Unable to load weather for this map location."
+        );
+      })
+      .finally(() => {
+        if (active) setMapWeatherLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedCity?.latitude, selectedCity?.longitude]);
 
   const openCity = (cityName, city) => {
     const latitude = Number(city?.latitude);
@@ -25,6 +61,17 @@ export default function MapView() {
     setSelectedCity({
       ...city,
       name: cityName,
+      latitude,
+      longitude
+    });
+  };
+
+  const selectMapPoint = ({ latitude, longitude }) => {
+    setSelectedCity({
+      name: "Selected map location",
+      country: "",
+      admin1: "",
+      timezone: "Auto",
       latitude,
       longitude
     });
@@ -53,7 +100,8 @@ export default function MapView() {
         <div className="h-[min(65vh,620px)] min-h-[420px] overflow-hidden rounded-[20px] border border-[var(--border)] bg-[var(--panel)] p-2 shadow-[0_12px_30px_rgba(15,30,70,.10)]">
           <WorldMap
             className="!h-full !rounded-[14px]"
-            onSelectCity={(city) => navigate(`/city/${encodeURIComponent(city)}`)}
+            onSelectCity={(cityName, city) => openCity(cityName, city)}
+            onMapClick={selectMapPoint}
             coordinates={selectedCity}
             selectedCity={selectedCity}
           />
@@ -90,6 +138,10 @@ export default function MapView() {
                       {getWeatherDescription(weather.current.weather_code)}
                     </p>
                   </div>
+                ) : mapWeatherLoading ? (
+                  <p className="mt-5 text-sm text-white/75">Loading weather conditions...</p>
+                ) : mapWeatherError ? (
+                  <p className="mt-5 text-sm text-[#ffd3dc]">{mapWeatherError}</p>
                 ) : (
                   <p className="mt-5 text-sm text-white/75">Loading weather conditions...</p>
                 )}
@@ -127,7 +179,11 @@ export default function MapView() {
 
               <button
                 className="min-h-[44px] rounded-[12px] bg-[linear-gradient(135deg,#ec9a45,#d46f91)] px-4 font-bold text-white"
-                onClick={() => navigate(`/city/${encodeURIComponent(selectedCity.name)}`)}
+                onClick={() =>
+                  navigate(
+                    `/city/${encodeURIComponent(selectedCity.name)}?lat=${selectedCity.latitude}&lng=${selectedCity.longitude}`
+                  )
+                }
               >
                 {t("viewForecast")}
               </button>
