@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function useGeolocation() {
   const [coordinates, setCoordinates] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const locate = () => {
     if (!navigator.geolocation) {
@@ -11,6 +12,7 @@ export default function useGeolocation() {
     }
 
     setError("");
+    setLoading(true);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -18,13 +20,15 @@ export default function useGeolocation() {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
         });
+        setLoading(false);
       },
       () => {
         setError("Location permission denied or unavailable.");
+        setLoading(false);
       },
-      { enableHighAccuracy: false, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 }
     );
   };
 
-  return { coordinates, error, locate };
+  return { coordinates, error, loading, locate };
 }

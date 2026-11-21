@@ -67,14 +67,18 @@ export default function CityDetailView() {
         setCoordinateLoading(true);
         setCoordinateError("");
         getWeatherByCoordinates(latitude, longitude)
-          .then((result) => setCoordinateWeather(result))
-          .catch((err) =>
+          .then((result) => {
+            setCoordinateWeather(result);
+          })
+          .catch((err) => {
             setCoordinateError(
               err.response?.data?.error ||
                 "Unable to load weather for these coordinates."
-            )
-          )
-          .finally(() => setCoordinateLoading(false));
+            );
+          })
+          .finally(() => {
+            setCoordinateLoading(false);
+          });
       }
     : cityWeather.refresh;
 

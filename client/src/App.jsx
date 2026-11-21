@@ -25,7 +25,7 @@ import { getWeatherByCoordinates } from "./services/weatherService";
 
 function AppLayout() {
   const navigate = useNavigate();
-  const { coordinates, error: locationError, locate } = useGeolocation();
+  const { coordinates, error: locationError, loading: geolocationLoading, locate } = useGeolocation();
   const [selectedCity, setSelectedCity] = useState("Nairobi");
   const [selectedCountry, setSelectedCountry] = useState("Kenya");
   const [locationLoading, setLocationLoading] = useState(false);
@@ -82,7 +82,7 @@ function AppLayout() {
             onLocate={requestLocation}
             cityName={selectedCity}
             countryName={selectedCountry}
-            locationLoading={locationLoading}
+            locationLoading={geolocationLoading || locationLoading}
           />
 
           <main className="mx-auto w-full min-w-0 max-w-[1700px] p-[14px] min-[681px]:p-5">

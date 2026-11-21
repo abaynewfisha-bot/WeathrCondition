@@ -44,11 +44,9 @@ exports.coordinates = async (req, res, next) => {
       return res.status(400).json({ error: "Valid latitude and longitude are required." });
     }
 
+    const nearestCity = provider.findNearestCity(latitude, longitude);
     const weather = await provider.getWeatherByCoordinates({
-      name: "Selected map location",
-      country: "",
-      admin1: "",
-      timezone: "auto",
+      ...nearestCity,
       latitude,
       longitude
     });
