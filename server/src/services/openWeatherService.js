@@ -7,6 +7,39 @@ const http = axios.create({
   }
 });
 
+const knownCities = [
+  { name: "Nairobi", country: "Kenya", latitude: -1.286389, longitude: 36.817223, timezone: "Africa/Nairobi" },
+  { name: "Addis Ababa", country: "Ethiopia", latitude: 9.03, longitude: 38.74, timezone: "Africa/Addis_Ababa" },
+  { name: "Riyadh", country: "Saudi Arabia", latitude: 24.7136, longitude: 46.6753, timezone: "Asia/Riyadh" },
+  { name: "Dubai", country: "United Arab Emirates", latitude: 25.2048, longitude: 55.2708, timezone: "Asia/Dubai" },
+  { name: "Tokyo", country: "Japan", latitude: 35.6762, longitude: 139.6503, timezone: "Asia/Tokyo" },
+  { name: "London", country: "United Kingdom", latitude: 51.5072, longitude: -0.1276, timezone: "Europe/London" },
+  { name: "New York", country: "United States", latitude: 40.7128, longitude: -74.0060, timezone: "America/New_York" },
+  { name: "Paris", country: "France", latitude: 48.8566, longitude: 2.3522, timezone: "Europe/Paris" },
+  { name: "Oslo", country: "Norway", latitude: 59.9139, longitude: 10.7522, timezone: "Europe/Oslo" },
+  { name: "Sydney", country: "Australia", latitude: -33.8688, longitude: 151.2093, timezone: "Australia/Sydney" }
+];
+
+function findNearestCity(latitude, longitude) {
+  const radians = (value) => (value * Math.PI) / 180;
+  const earthRadius = 6371;
+
+  return knownCities.reduce((nearest, city) => {
+    const latitudeDelta = radians(city.latitude - latitude);
+    const longitudeDelta = radians(city.longitude - longitude);
+    const a =
+      Math.sin(latitudeDelta / 2) ** 2 +
+      Math.cos(radians(latitude)) *
+        Math.cos(radians(city.latitude)) *
+        Math.sin(longitudeDelta / 2) ** 2;
+    const distance = earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return !nearest || distance < nearest.distance
+      ? { city, distance }
+      : nearest;
+  }, null).city;
+}
+
 async function searchCities(query) {
   const response = await http.get(
     "https://geocoding-api.open-meteo.com/v1/search",
@@ -101,5 +134,6 @@ async function getWeatherByCity(cityName) {
 module.exports = {
   searchCities,
   getWeatherByCity,
-  getWeatherByCoordinates
+  getWeatherByCoordinates,
+  findNearestCity
 };

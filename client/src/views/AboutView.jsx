@@ -1,6 +1,8 @@
 import { CloudSun, Code2, Mail, Map, ShieldCheck } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function AboutView() {
+  const { t } = useLanguage();
   const features = [
     "Real-time weather conditions",
     "Hourly and 7-day forecasts",

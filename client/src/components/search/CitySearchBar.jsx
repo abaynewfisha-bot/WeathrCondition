@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { MapPin, Search } from "lucide-react";
 import { searchWeatherCities } from "../../services/weatherService";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function CitySearchBar({ onSelect }) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [searchState, setSearchState] = useState({
     query: "",
@@ -78,7 +80,7 @@ export default function CitySearchBar({ onSelect }) {
       <Search className="absolute left-[16px] top-1/2 -translate-y-1/2 text-white" size={21} />
       <input
         className="min-h-[48px] w-full rounded-[14px] border border-white/20 bg-[linear-gradient(100deg,#3e82e7,#4b79df)] py-[10px] pl-[48px] pr-[14px] text-white outline-none placeholder:text-[#dbe8ff] focus:border-white/50"
-        placeholder="Search for a city..."
+        placeholder={t("search")}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={(event) => {

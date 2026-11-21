@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -21,14 +21,49 @@ import AboutView from "./views/AboutView";
 import CitiesView from "./views/CitiesView";
 
 import useGeolocation from "./controllers/useGeolocation";
+import { getWeatherByCoordinates } from "./services/weatherService";
 
 function AppLayout() {
   const navigate = useNavigate();
   const { coordinates, error: locationError, locate } = useGeolocation();
   const [selectedCity, setSelectedCity] = useState("Nairobi");
+  const [selectedCountry, setSelectedCountry] = useState("Kenya");
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationResolveError, setLocationResolveError] = useState("");
 
-  function selectCity(city) {
+  useEffect(() => {
+    if (!coordinates) return;
+
+    let active = true;
+    setLocationLoading(true);
+    setLocationResolveError("");
+
+    getWeatherByCoordinates(coordinates.latitude, coordinates.longitude)
+      .then((weather) => {
+        if (!active) return;
+        setSelectedCity(weather.location.name);
+        setSelectedCountry(weather.location.country);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setLocationResolveError(
+          err.response?.data?.error || "Unable to resolve your current location."
+        );
+      })
+      .finally(() => {
+        if (active) setLocationLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [coordinates]);
+
+  function selectCity(city, cityInfo) {
     setSelectedCity(city);
+    if (cityInfo?.country) {
+      setSelectedCountry(cityInfo.country);
+    }
     navigate(`/city/${encodeURIComponent(city)}`);
   }
 
@@ -46,12 +81,20 @@ function AppLayout() {
             onSelectCity={selectCity}
             onLocate={requestLocation}
             cityName={selectedCity}
+            countryName={selectedCountry}
+            locationLoading={locationLoading}
           />
 
           <main className="mx-auto w-full min-w-0 max-w-[1700px] p-[14px] min-[681px]:p-5">
           {locationError && (
             <div className="mb-4 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
               <p className="text-[var(--muted)]">{locationError}</p>
+            </div>
+          )}
+
+          {locationResolveError && (
+            <div className="mb-4 min-w-0 rounded-[20px] bg-[var(--panel)] p-4 sm:p-5">
+              <p className="text-[var(--muted)]">{locationResolveError}</p>
             </div>
           )}
 

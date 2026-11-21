@@ -1,6 +1,6 @@
 // weatherCodes helpers
 export function getWeatherDescription(code) {
-  const descriptions = {
+  const english = {
     0: "Clear sky",
     1: "Mainly clear",
     2: "Partly cloudy",
@@ -31,7 +31,27 @@ export function getWeatherDescription(code) {
     99: "Heavy thunderstorm with hail"
   };
 
-  return descriptions[code] || "Weather unavailable";
+  const language = localStorage.getItem("weatherworld_language") || "English";
+  if (language === "Amharic") {
+    const amharic = {
+      0:"ጥርት ያለ ሰማይ",1:"በአብዛኛው ጥርት",2:"በከፊል ደመናማ",3:"ደመናማ",
+      45:"ጭጋግ",48:"የበረዶ ጭጋግ",61:"ቀላል ዝናብ",63:"መጠነኛ ዝናብ",65:"ከባድ ዝናብ",
+      71:"ቀላል በረዶ",73:"መጠነኛ በረዶ",75:"ከባድ በረዶ",95:"ነጎድጓድ"
+    };
+    return amharic[code] || "የአየር ሁኔታ አይገኝም";
+  }
+  if (language === "Arabic") {
+    const arabic = {0:"سماء صافية",1:"صاف غالبا",2:"غائم جزئيًا",3:"غائم",45:"ضباب",61:"مطر خفيف",63:"مطر معتدل",65:"مطر غزير",71:"ثلج خفيف",95:"عاصفة رعدية"};
+    return arabic[code] || "حالة الطقس غير متاحة";
+  }
+  if (language === "French") {
+    const french = {0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",61:"Pluie légère",63:"Pluie modérée",65:"Forte pluie",71:"Neige légère",95:"Orage"};
+    return french[code] || "Météo indisponible";
+  }
+  if (language === "Geez") {
+    return english[code] || "የአየር ሁኔታ የለም";
+  }
+  return english[code] || "Weather unavailable";
 }
 
 export function getWeatherEmoji(code, isDay = true) {

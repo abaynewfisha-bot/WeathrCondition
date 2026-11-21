@@ -27,3 +27,32 @@ exports.search = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.coordinates = async (req, res, next) => {
+  try {
+    const latitude = Number(req.query.latitude);
+    const longitude = Number(req.query.longitude);
+
+    if (
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      return res.status(400).json({ error: "Valid latitude and longitude are required." });
+    }
+
+    const nearestCity = provider.findNearestCity(latitude, longitude);
+    const weather = await provider.getWeatherByCoordinates({
+      ...nearestCity,
+      latitude,
+      longitude
+    });
+
+    res.json(weather);
+  } catch (error) {
+    next(error);
+  }
+};

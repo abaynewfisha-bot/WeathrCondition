@@ -7,11 +7,13 @@ import useWeather from "../controllers/useWeather";
 import { useUnit } from "../context/UnitContext";
 import { formatTemperature } from "../utils/convertTemp";
 import { getWeatherDescription } from "../utils/weatherCodes";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function MapView() {
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState(null);
   const { unit } = useUnit();
+  const { t } = useLanguage();
   const { weather } = useWeather(selectedCity?.name || "Nairobi");
 
   const openCity = (cityName, city) => {
@@ -32,9 +34,9 @@ export default function MapView() {
     <section className="min-w-0">
       <div className="mb-[18px] flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">World Weather Map</h1>
+          <h1 className="text-2xl font-bold">{t("map")}</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Explore city locations and live geographical weather conditions.
+            {t("mapDescription")}
           </p>
         </div>
         <div className="inline-flex items-center gap-2 rounded-full bg-[var(--panel)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
@@ -64,7 +66,7 @@ export default function MapView() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[.12em] text-white/70">
-                      Selected location
+                      {t("selectedLocation")}
                     </p>
                     <h2 className="mt-2 flex items-center gap-2 text-xl font-bold">
                       <MapPin size={19} fill="white" />
@@ -96,14 +98,14 @@ export default function MapView() {
               <div className="rounded-[18px] border border-[var(--border)] bg-[var(--panel)] p-5">
                 <h2 className="mb-4 flex items-center gap-2 font-bold">
                   <Compass size={19} className="text-[#75a8ee]" />
-                  Geographical information
+                  {t("geographicalInfo")}
                 </h2>
                 <dl className="grid grid-cols-[90px_1fr] gap-3 text-sm">
-                  <dt className="text-[var(--muted)]">Latitude</dt>
+                  <dt className="text-[var(--muted)]">{t("latitude")}</dt>
                   <dd className="font-semibold">{selectedCity.latitude.toFixed(4)}°</dd>
-                  <dt className="text-[var(--muted)]">Longitude</dt>
+                  <dt className="text-[var(--muted)]">{t("longitude")}</dt>
                   <dd className="font-semibold">{selectedCity.longitude.toFixed(4)}°</dd>
-                  <dt className="text-[var(--muted)]">Timezone</dt>
+                  <dt className="text-[var(--muted)]">{t("timezone")}</dt>
                   <dd className="font-semibold">{selectedCity.timezone || "Auto"}</dd>
                 </dl>
               </div>
@@ -127,7 +129,7 @@ export default function MapView() {
                 className="min-h-[44px] rounded-[12px] bg-[linear-gradient(135deg,#ec9a45,#d46f91)] px-4 font-bold text-white"
                 onClick={() => navigate(`/city/${encodeURIComponent(selectedCity.name)}`)}
               >
-                View full forecast
+                {t("viewForecast")}
               </button>
             </>
           ) : (

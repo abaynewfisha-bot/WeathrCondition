@@ -2,7 +2,13 @@ import { MapPin } from "lucide-react";
 import CitySearchBar from "../search/CitySearchBar";
 import ThemeToggle from "../common/ThemeToggle";
 
-export default function Navbar({ onSelectCity, onLocate, cityName = "Nairobi" }) {
+export default function Navbar({
+  onSelectCity,
+  onLocate,
+  cityName = "Nairobi",
+  countryName = "Kenya",
+  locationLoading = false
+}) {
   return (
     <header className="sticky top-0 z-[500] flex min-h-[68px] flex-wrap items-center gap-3 border-b border-[var(--border)] bg-[var(--bg)] px-[18px] py-3 min-[681px]:min-h-[78px] min-[681px]:flex-nowrap min-[681px]:gap-4 min-[681px]:px-5">
       <div className="order-last w-full min-[681px]:order-none min-[681px]:max-w-[680px] min-[681px]:flex-1">
@@ -17,7 +23,7 @@ export default function Navbar({ onSelectCity, onLocate, cityName = "Nairobi" })
           onClick={onLocate}
         >
           <MapPin size={18} fill="white" />
-          {cityName}, Kenya
+          {locationLoading ? "Finding location..." : `${cityName}, ${countryName}`}
         </button>
         <ThemeToggle />
       </div>

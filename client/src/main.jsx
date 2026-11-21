@@ -7,14 +7,17 @@ import "./index.css";
 import App from "./App";
 import { ThemeProvider } from "./context/ThemeContext";
 import { UnitProvider } from "./context/UnitContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
       <UnitProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <LanguageProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </LanguageProvider>
       </UnitProvider>
     </ThemeProvider>
   </React.StrictMode>

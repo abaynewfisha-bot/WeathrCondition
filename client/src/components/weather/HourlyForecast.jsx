@@ -3,9 +3,11 @@ import { useUnit } from "../../context/UnitContext";
 import { formatTemperature } from "../../utils/convertTemp";
 import { formatHour } from "../../utils/formatDate";
 import { getWeatherEmoji } from "../../utils/weatherCodes";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function HourlyForecast({ weather }) {
   const { unit } = useUnit();
+  const { t } = useLanguage();
 
   if (!weather?.hourly) return null;
 
@@ -18,14 +20,14 @@ export default function HourlyForecast({ weather }) {
 
   return (
     <section className="min-w-0 rounded-[18px] bg-white p-4 text-[#17243a] sm:p-5">
-      <h2 className="mb-[14px] text-lg font-bold">Hourly Forecast</h2>
+      <h2 className="mb-[14px] text-lg font-bold">{t("hourlyForecast")}</h2>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {time.slice(start, start + 12).map((hour, index) => {
           const i = start + index;
 
           return (
             <div className={`min-w-[82px] rounded-[12px] p-3 text-center ${index === 0 ? "bg-[#1d73dd] text-white" : "bg-[#eef1ff]"}`} key={hour}>
-              <div className={`text-xs ${index === 0 ? "text-white" : "text-[#4b5b72]"}`}>{index === 0 ? "Now" : formatHour(hour)}</div>
+              <div className={`text-xs ${index === 0 ? "text-white" : "text-[#4b5b72]"}`}>{index === 0 ? t("now") : formatHour(hour)}</div>
               <div className="my-2 text-[25px]">
                 {getWeatherEmoji(weather.current?.weather_code)}
               </div>

@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { CloudSun, Heart, Home, Info, Map, MapPin, Settings } from "lucide-react";
+import { useLanguage } from "../../context/LanguageContext";
 
 const links = [
   { to: "/", label: "Home", icon: Home, end: true },
@@ -11,6 +12,16 @@ const links = [
 ];
 
 export default function Sidebar() {
+  const { t } = useLanguage();
+  const labels = {
+    "/": t("home"),
+    "/cities": t("cities"),
+    "/favorites": t("favorites"),
+    "/map": t("map"),
+    "/settings": t("settings"),
+    "/about": t("about")
+  };
+
   return (
     <aside className="relative z-[600] flex min-h-[68px] flex-col border-b border-[#293a52] bg-[linear-gradient(180deg,#183b90_0%,#27358a_62%,#1b4d86_100%)] px-3 py-2 min-[681px]:min-h-screen min-[681px]:border-b-0 min-[681px]:border-r min-[681px]:px-[14px] min-[681px]:py-5">
       <a href="/" className="mb-5 hidden flex-col items-center justify-center rounded-[16px] bg-[#0b2d75]/45 px-3 py-5 text-center text-white no-underline min-[681px]:flex" aria-label="WeatherWorld home">
@@ -32,7 +43,7 @@ export default function Sidebar() {
             }
           >
             <Icon size={20} />
-            <span>{label}</span>
+            <span>{labels[to] || label}</span>
           </NavLink>
         ))}
       </nav>

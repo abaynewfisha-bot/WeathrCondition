@@ -9,10 +9,12 @@ import { formatTemperature } from "../utils/convertTemp";
 import { getWeatherDescription, getWeatherEmoji } from "../utils/weatherCodes";
 import Loader from "../components/common/Loader";
 import ErrorMessage from "../components/common/ErrorMessage";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function FavoritesView() {
   const navigate = useNavigate();
   const { unit } = useUnit();
+  const { t } = useLanguage();
   const { favorites, loading, error, refresh, remove } = useFavorites();
   const token = localStorage.getItem("weatherworld_token");
 
@@ -117,7 +119,7 @@ export default function FavoritesView() {
     <section className="min-w-0">
       <div className="mb-[18px] flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Favorites</h1>
+          <h1 className="text-2xl font-bold">{t("favorites")}</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">
             Saved cities with quick access to current weather.
           </p>
@@ -162,7 +164,7 @@ export default function FavoritesView() {
       {!weatherLoading && weatherData.length === 0 && (
         <div className="rounded-[20px] border border-[var(--border)] bg-[var(--panel)] px-6 py-12 text-center">
           <Heart size={38} className="mx-auto text-[#ef8dad]" />
-          <h2 className="mt-4 text-lg font-bold">No favorites yet</h2>
+          <h2 className="mt-4 text-lg font-bold">{t("noFavorites")}</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">
             Add a city from the Cities page or search page.
           </p>

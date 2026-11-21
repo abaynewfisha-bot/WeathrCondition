@@ -9,12 +9,14 @@ import { getWeather } from "../services/weatherService";
 import { useUnit } from "../context/UnitContext";
 import { formatTemperature } from "../utils/convertTemp";
 import { getWeatherDescription, getWeatherEmoji } from "../utils/weatherCodes";
+import { useLanguage } from "../context/LanguageContext";
 
 const STARTER_CITIES = ["Nairobi", "London", "Tokyo", "Dubai"];
 
 export default function CitiesView() {
   const navigate = useNavigate();
   const { unit } = useUnit();
+  const { t } = useLanguage();
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -100,9 +102,9 @@ export default function CitiesView() {
   return (
     <section className="min-w-0">
       <div className="mb-[18px]">
-        <h1 className="text-2xl font-bold">Cities</h1>
+        <h1 className="text-2xl font-bold">{t("cities")}</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Search locations, compare temperatures and manage saved cities.
+          {t("searchLocations")}
         </p>
       </div>
 
@@ -186,7 +188,7 @@ export default function CitiesView() {
 
       {cities.length > 0 && (
         <section className="mt-4 rounded-[18px] border border-[var(--border)] bg-[var(--panel)] p-4 sm:p-5">
-          <h2 className="mb-4 text-lg font-bold">Temperature comparison</h2>
+          <h2 className="mb-4 text-lg font-bold">{t("compare")}</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-sm">
               <thead>

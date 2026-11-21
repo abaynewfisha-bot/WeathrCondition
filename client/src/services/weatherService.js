@@ -16,3 +16,11 @@ export async function searchWeatherCities(query) {
 
   return response.data.results || [];
 }
+
+export async function getWeatherByCoordinates(latitude, longitude) {
+  const response = await api.get("/weather/coordinates", {
+    params: { latitude, longitude }
+  });
+
+  return response.data;
+}

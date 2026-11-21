@@ -3,15 +3,14 @@ import { Bell, Languages, MapPin, Palette, Thermometer } from "lucide-react";
 
 import { useTheme } from "../context/ThemeContext";
 import { useUnit } from "../context/UnitContext";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function SettingsView() {
   const { unit, setUnit } = useUnit();
   const { theme, setTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const [notifications, setNotifications] = useState(
     () => localStorage.getItem("weatherworld_notifications") !== "off"
-  );
-  const [language, setLanguage] = useState(
-    () => localStorage.getItem("weatherworld_language") || "English"
   );
   const [locationEnabled, setLocationEnabled] = useState(
     () => localStorage.getItem("weatherworld_location") !== "off"
@@ -29,13 +28,12 @@ export default function SettingsView() {
 
   function saveLanguage(value) {
     setLanguage(value);
-    localStorage.setItem("weatherworld_language", value);
   }
 
   return (
     <section className="min-w-0 rounded-[20px] border border-[var(--border)] bg-[var(--panel)] p-5 sm:p-7">
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold">Settings</h1>
+        <h1 className="text-2xl font-extrabold">{t("settings")}</h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
           Temperature units, theme, notifications, language and location preferences.
         </p>
@@ -45,7 +43,7 @@ export default function SettingsView() {
         <div className="rounded-[16px] border border-[var(--border)] bg-[var(--card)] p-5">
           <h2 className="mb-4 flex items-center gap-2 font-bold">
             <Thermometer size={20} className="text-[#ffad32]" />
-            Temperature unit
+            {t("temperatureUnit")}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             {["C", "F"].map((value) => (
@@ -58,7 +56,7 @@ export default function SettingsView() {
                 }`}
                 onClick={() => setUnit(value)}
               >
-                {value === "C" ? "Celsius (°C)" : "Fahrenheit (°F)"}
+                {value === "C" ? t("celsius") : t("fahrenheit")}
               </button>
             ))}
           </div>
@@ -67,7 +65,7 @@ export default function SettingsView() {
         <div className="rounded-[16px] border border-[var(--border)] bg-[var(--card)] p-5">
           <h2 className="mb-4 flex items-center gap-2 font-bold">
             <Palette size={20} className="text-[#78aef1]" />
-            Appearance
+            {t("appearance")}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             {["dark", "light"].map((value) => (
@@ -80,7 +78,7 @@ export default function SettingsView() {
                 }`}
                 onClick={() => setTheme(value)}
               >
-                {value} theme
+                {value === "dark" ? t("darkTheme") : t("lightTheme")}
               </button>
             ))}
           </div>
@@ -88,7 +86,7 @@ export default function SettingsView() {
 
         <PreferenceRow
           icon={<Bell size={20} className="text-[#ef8dad]" />}
-          title="Weather notifications"
+          title={t("notifications")}
           description="Receive weather alerts and severe weather updates."
           enabled={notifications}
           onToggle={saveNotifications}
@@ -97,7 +95,7 @@ export default function SettingsView() {
         <div className="rounded-[16px] border border-[var(--border)] bg-[var(--card)] p-5">
           <h2 className="mb-4 flex items-center gap-2 font-bold">
             <Languages size={20} className="text-[#61c6ad]" />
-            Language
+            {t("language")}
           </h2>
           <select
             className="min-h-[44px] w-full rounded-[12px] border border-[var(--border)] bg-[var(--panel)] px-3 text-[var(--text)] outline-none"
