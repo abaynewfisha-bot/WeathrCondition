@@ -17,20 +17,20 @@ export default function HourlyForecast({ weather }) {
   if (start < 0) start = 0;
 
   return (
-    <section className="mt-[18px] min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
-      <h2 className="mb-[18px] text-lg font-semibold">Hourly forecast</h2>
-      <div className="flex gap-3 overflow-x-auto pb-2">
+    <section className="min-w-0 rounded-[18px] bg-white p-4 text-[#17243a] sm:p-5">
+      <h2 className="mb-[14px] text-lg font-bold">Hourly Forecast</h2>
+      <div className="flex gap-2 overflow-x-auto pb-1">
         {time.slice(start, start + 12).map((hour, index) => {
           const i = start + index;
 
           return (
-            <div className="min-w-[82px] rounded-xl bg-[#172438] p-3 text-center" key={hour}>
-              <div className="text-xs text-[#91a5bf]">{formatHour(hour)}</div>
-              <div className="my-3 text-[25px]">
+            <div className={`min-w-[82px] rounded-[12px] p-3 text-center ${index === 0 ? "bg-[#1d73dd] text-white" : "bg-[#eef1ff]"}`} key={hour}>
+              <div className={`text-xs ${index === 0 ? "text-white" : "text-[#4b5b72]"}`}>{index === 0 ? "Now" : formatHour(hour)}</div>
+              <div className="my-2 text-[25px]">
                 {getWeatherEmoji(weather.current?.weather_code)}
               </div>
               <strong>{formatTemperature(temperature_2m[i], unit)}°</strong>
-              <div className="mt-[9px] flex items-center justify-center gap-1 text-xs text-[#91a5bf]">
+              <div className={`mt-2 flex items-center justify-center gap-1 text-xs ${index === 0 ? "text-white/75" : "text-[#718197]"}`}>
                 <Droplets size={13} />{" "}
                 {precipitation_probability[i] ?? 0}%
               </div>

@@ -75,10 +75,10 @@ export default function CitySearchBar({ onSelect }) {
 
   return (
     <div className="relative">
-      <Search className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#91a5bf]" size={19} />
+      <Search className="absolute left-[16px] top-1/2 -translate-y-1/2 text-white" size={21} />
       <input
-        className="min-h-[42px] w-full rounded-xl border border-[#293a52] bg-[#172438] py-[10px] pl-[42px] pr-[14px] text-[#e7edf7] outline-none placeholder:text-[#91a5bf] focus:border-[#ffa52f]"
-        placeholder="Search any city"
+        className="min-h-[48px] w-full rounded-[14px] border border-white/20 bg-[linear-gradient(100deg,#3e82e7,#4b79df)] py-[10px] pl-[48px] pr-[14px] text-white outline-none placeholder:text-[#dbe8ff] focus:border-white/50"
+        placeholder="Search for a city..."
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={(event) => {

@@ -17,8 +17,11 @@ export default function DailyForecast({ weather }) {
   } = weather.daily;
 
   return (
-    <section className="mt-[18px] min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
-      <h2 className="mb-[18px] text-lg font-semibold">7-day forecast</h2>
+    <section className="min-w-0 rounded-[18px] bg-white p-4 text-[#17243a] sm:p-5">
+      <div className="mb-[14px] flex items-center justify-between">
+        <h2 className="text-lg font-bold">7-Day Forecast</h2>
+        <button className="text-xs font-bold text-[#9a52a6]">View Details →</button>
+      </div>
       <div className="grid grid-cols-2 gap-3 min-[681px]:grid-cols-4 min-[1051px]:grid-cols-7">
         {time.map((day, index) => (
           <div className="min-w-0 rounded-xl bg-[#172438] p-3 text-center" key={day}>

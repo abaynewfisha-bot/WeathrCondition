@@ -1,17 +1,12 @@
-import { CloudSun, LocateFixed } from "lucide-react";
+import { LocateFixed } from "lucide-react";
 import CitySearchBar from "../search/CitySearchBar";
 import UnitToggle from "../common/UnitToggle";
 import ThemeToggle from "../common/ThemeToggle";
 
 export default function Navbar({ onSelectCity, onLocate }) {
   return (
-    <header className="sticky top-0 z-[500] flex min-h-[68px] flex-wrap items-center gap-3 border-b border-[var(--border)] bg-[var(--bg)] px-[18px] py-3 min-[681px]:min-h-[82px] min-[681px]:flex-nowrap min-[681px]:gap-6 min-[681px]:px-7">
-      <a className="flex shrink-0 items-center gap-3 whitespace-nowrap text-[21px] font-extrabold text-[var(--text)] no-underline min-[681px]:text-[25px]" href="/" aria-label="WeatherWorld home">
-        <CloudSun className="text-[var(--accent)]" size={29} />
-        <span>WeatherWorld</span>
-      </a>
-
-      <div className="order-last w-full min-[681px]:order-none min-[681px]:flex-1">
+    <header className="sticky top-0 z-[500] flex min-h-[68px] flex-wrap items-center gap-3 border-b border-[var(--border)] bg-[var(--bg)] px-[18px] py-3 min-[681px]:min-h-[78px] min-[681px]:flex-nowrap min-[681px]:gap-4 min-[681px]:px-5">
+      <div className="order-last w-full min-[681px]:order-none min-[681px]:max-w-[680px] min-[681px]:flex-1">
         <CitySearchBar onSelect={onSelectCity} />
       </div>
 
