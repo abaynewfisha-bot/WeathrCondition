@@ -3,7 +3,7 @@ import { CloudSun, Heart, Home, Info, Map, MapPin, Settings } from "lucide-react
 
 const links = [
   { to: "/", label: "Home", icon: Home, end: true },
-  { to: "/city/Nairobi", label: "Cities", icon: MapPin },
+  { to: "/cities", label: "Cities", icon: MapPin },
   { to: "/favorites", label: "Favorites", icon: Heart },
   { to: "/map", label: "Map", icon: Map },
   { to: "/settings", label: "Settings", icon: Settings },

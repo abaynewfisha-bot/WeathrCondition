@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-import { Heart, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Heart, Plus, Trash2 } from "lucide-react";
 
 import useFavorites from "../controllers/useFavorites";
 import { getWeather } from "../services/weatherService";
-import WeatherCard from "../components/weather/WeatherCard";
+import { useUnit } from "../context/UnitContext";
+import { formatTemperature } from "../utils/convertTemp";
+import { getWeatherDescription, getWeatherEmoji } from "../utils/weatherCodes";
 import Loader from "../components/common/Loader";
 import ErrorMessage from "../components/common/ErrorMessage";
 
 export default function FavoritesView() {
   const navigate = useNavigate();
+  const { unit } = useUnit();
   const { favorites, loading, error, refresh, remove } = useFavorites();
+  const token = localStorage.getItem("weatherworld_token");
 
   const [guestFavorites, setGuestFavorites] = useState(() => {
     try {
@@ -21,286 +25,227 @@ export default function FavoritesView() {
       return [];
     }
   });
+  const [cityInput, setCityInput] = useState("");
+  const [weatherData, setWeatherData] = useState([]);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState("");
 
-  const [guestWeather, setGuestWeather] = useState(null);
-  const [guestLoading, setGuestLoading] = useState(false);
-  const [guestWeatherError, setGuestWeatherError] = useState("");
-  const [favoriteWeather, setFavoriteWeather] = useState({});
-  const [guestCityInput, setGuestCityInput] = useState("");
-
-  const token = localStorage.getItem("weatherworld_token");
-
-  useEffect(() => {
-    if (token || guestFavorites.length === 0) return undefined;
-
-    let active = true;
-
-    Promise.allSettled(guestFavorites.map((city) => getWeather(city)))
-      .then((results) => {
-        if (!active) return;
-
-        setGuestWeather(
-          results.map((result, index) => ({
-            city: guestFavorites[index],
-            weather: result.status === "fulfilled" ? result.value : null,
-            error: result.status === "rejected"
-              ? result.reason?.response?.data?.error ||
-                `Unable to load weather for ${guestFavorites[index]}.`
-              : ""
-          }))
-        );
-        if (results.some((result) => result.status === "rejected")) {
-          setGuestWeatherError("Some guest favorites could not be loaded.");
-        }
-      })
-      .finally(() => {
-        if (active) setGuestLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [guestFavorites, token]);
+  const savedNames = token
+    ? favorites.map((favorite) => favorite.city_name)
+    : guestFavorites;
 
   useEffect(() => {
-    if (!token || favorites.length === 0) return undefined;
+    if (savedNames.length === 0) {
+      setWeatherData([]);
+      setWeatherLoading(false);
+      return undefined;
+    }
 
     let active = true;
+    setWeatherLoading(true);
+    setWeatherError("");
 
     Promise.allSettled(
-      favorites.map(async (favorite) => ({
-        id: favorite.id,
-        cityName: favorite.city_name,
-        weather: await getWeather(favorite.city_name)
-      }))
+      savedNames.map((cityName) => getWeather(cityName))
     ).then((results) => {
       if (!active) return;
 
-      const nextWeather = {};
-      results.forEach((result, index) => {
-        const favorite = favorites[index];
-        nextWeather[favorite.id] = result.status === "fulfilled"
-          ? { cityName: favorite.city_name, weather: result.value.weather }
-          : {
-              cityName: favorite.city_name,
-              error: result.reason?.response?.data?.error ||
-                `Unable to load weather for ${favorite.city_name}.`
-            };
-      });
-      setFavoriteWeather(nextWeather);
+      const next = results.map((result, index) => ({
+        cityName: savedNames[index],
+        weather: result.status === "fulfilled" ? result.value : null,
+        error: result.status === "rejected"
+          ? result.reason?.response?.data?.error ||
+            `Unable to load weather for ${savedNames[index]}`
+          : ""
+      }));
+      setWeatherData(next);
+      if (next.some((item) => item.error)) {
+        setWeatherError("Some favorite locations could not be loaded.");
+      }
+      setWeatherLoading(false);
     });
 
     return () => {
       active = false;
     };
-  }, [favorites, token]);
-
-  async function loadGuestWeather() {
-    setGuestLoading(true);
-    setGuestWeatherError("");
-
-    try {
-      const results = await Promise.allSettled(
-        guestFavorites.map((city) => getWeather(city))
-      );
-
-      setGuestWeather(
-        results.map((result, index) => ({
-          city: guestFavorites[index],
-          weather: result.status === "fulfilled" ? result.value : null,
-          error: result.status === "rejected"
-            ? result.reason?.response?.data?.error ||
-              `Unable to load weather for ${guestFavorites[index]}.`
-            : ""
-        }))
-      );
-
-      if (results.some((result) => result.status === "rejected")) {
-        setGuestWeatherError("Some guest favorites could not be loaded.");
-      }
-    } finally {
-      setGuestLoading(false);
-    }
-  }
+  }, [token, favorites, guestFavorites]);
 
   function addGuestFavorite(event) {
     event.preventDefault();
-    const city = guestCityInput.trim();
-    if (!city) return;
+    const cityName = cityInput.trim();
+    if (!cityName) return;
 
     const alreadySaved = guestFavorites.some(
-      (favorite) => favorite.toLowerCase() === city.toLowerCase()
+      (item) => item.toLowerCase() === cityName.toLowerCase()
     );
     if (alreadySaved) {
-      setGuestWeatherError(`${city} is already in your favorites.`);
+      setWeatherError(`${cityName} is already in your favorites.`);
       return;
     }
 
-    const nextFavorites = [...guestFavorites, city];
-    localStorage.setItem(
-      "weatherworld_guest_favorites",
-      JSON.stringify(nextFavorites)
+    const next = [...guestFavorites, cityName];
+    localStorage.setItem("weatherworld_guest_favorites", JSON.stringify(next));
+    setGuestFavorites(next);
+    setCityInput("");
+    setWeatherError("");
+  }
+
+  function removeGuestFavorite(cityName) {
+    const next = guestFavorites.filter(
+      (item) => item.toLowerCase() !== cityName.toLowerCase()
     );
-    setGuestFavorites(nextFavorites);
-    setGuestWeather(null);
-    setGuestWeatherError("");
-    setGuestCityInput("");
+    localStorage.setItem("weatherworld_guest_favorites", JSON.stringify(next));
+    setGuestFavorites(next);
+  }
+
+  async function removeSavedFavorite(cityName) {
+    const favorite = favorites.find(
+      (item) => item.city_name.toLowerCase() === cityName.toLowerCase()
+    );
+    if (favorite) await remove(favorite.id);
+  }
+
+  function removeFavorite(cityName) {
+    if (token) {
+      void removeSavedFavorite(cityName);
+    } else {
+      removeGuestFavorite(cityName);
+    }
   }
 
   return (
-    <>
-      <h1 className="mb-[18px] text-2xl font-bold">Your favorites</h1>
+    <section className="min-w-0">
+      <div className="mb-[18px] flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Favorites</h1>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Saved cities with quick access to current weather.
+          </p>
+        </div>
+        <div className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-4 py-2 text-sm">
+          <strong>{savedNames.length}</strong>{" "}
+          <span className="text-[var(--muted)]">saved locations</span>
+        </div>
+      </div>
 
       {loading && token && <Loader message="Loading saved favorites..." />}
       <ErrorMessage message={error} onRetry={refresh} />
+      <ErrorMessage message={weatherError} />
 
       {!token && (
-        <section className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
-          <Heart size={24} color="#ffa52f" />
-          <h2 className="mt-3 mb-[18px] text-lg font-semibold">
-            Guest favorites
-          </h2>
-          <p className="text-[#91a5bf]">
-            Guest favorites are saved in this browser. Sign in to save favorites
-            to your PostgreSQL account.
-          </p>
-
-          <form className="mb-3 flex flex-wrap items-stretch gap-3" onSubmit={addGuestFavorite}>
-            <label className="min-w-[160px] flex-1">
-              <span className="sr-only">City to add to favorites</span>
-              <input
-                className="w-full rounded-[15px] border border-transparent bg-[#172438] px-4 py-[15px] text-[#e7edf7] outline-none focus:border-[#ffa52f]"
-                value={guestCityInput}
-                onChange={(event) => setGuestCityInput(event.target.value)}
-                placeholder="Enter a city name"
-              />
-            </label>
-            <button
-              className="inline-flex items-center gap-2 rounded-[10px] bg-[#ffa52f] px-4 py-2.5 font-semibold text-[#151b26] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
-              type="submit"
-              disabled={!guestCityInput.trim()}
-            >
-              <Plus size={16} />
-              Add city
-            </button>
-          </form>
-
+        <form
+          className="mb-4 flex flex-wrap gap-3"
+          onSubmit={addGuestFavorite}
+        >
+          <label className="min-w-[220px] flex-1">
+            <span className="sr-only">City name</span>
+            <input
+              value={cityInput}
+              onChange={(event) => setCityInput(event.target.value)}
+              placeholder="Add a city to favorites"
+              className="min-h-[48px] w-full rounded-[14px] border border-[var(--border)] bg-[var(--panel)] px-4 text-[var(--text)] outline-none placeholder:text-[var(--muted)] focus:border-[#75a5e7]"
+            />
+          </label>
           <button
-            className="mb-3 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f] disabled:cursor-not-allowed disabled:opacity-60"
-            onClick={loadGuestWeather}
-            disabled={guestLoading || guestFavorites.length === 0}
+            type="submit"
+            disabled={!cityInput.trim()}
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#4e82df,#806cbf)] px-5 font-bold text-white disabled:opacity-50"
           >
-            {guestLoading ? "Loading..." : "Load favorite weather"}
+            <Plus size={18} />
+            Add location
           </button>
+        </form>
+      )}
 
-          {guestFavorites.length === 0 && (
-            <p className="p-7 text-center text-[#91a5bf]">
-              No guest favorites yet. Add a city above or use the heart buttons on the dashboard.
-            </p>
-          )}
-          {guestFavorites.length > 0 && (guestWeather === null || guestLoading) && (
-            <Loader message="Loading guest favorite weather..." />
-          )}
-          {guestWeatherError && (
-            <ErrorMessage message={guestWeatherError} onRetry={loadGuestWeather} />
-          )}
+      {weatherLoading && <Loader message="Loading favorite weather..." />}
 
-          <div className="mt-[18px] grid grid-cols-1 gap-[14px] min-[681px]:grid-cols-2 min-[1051px]:grid-cols-4">
-            {(guestWeather || []).map(({ city, weather, error: weatherError }) => (
-              <div key={city}>
-                {weather && (
-                  <WeatherCard
-                    weather={weather}
-                    favorite
-                    onSelect={() =>
-                      navigate(`/city/${encodeURIComponent(weather.location.name)}`)
-                    }
-                  />
-                )}
-                {weatherError && <ErrorMessage message={weatherError} />}
+      {!weatherLoading && weatherData.length === 0 && (
+        <div className="rounded-[20px] border border-[var(--border)] bg-[var(--panel)] px-6 py-12 text-center">
+          <Heart size={38} className="mx-auto text-[#ef8dad]" />
+          <h2 className="mt-4 text-lg font-bold">No favorites yet</h2>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Add a city from the Cities page or search page.
+          </p>
+          <button
+            type="button"
+            className="mt-5 min-h-[44px] rounded-[12px] bg-[linear-gradient(135deg,#ec9a45,#d46f91)] px-5 font-bold text-white"
+            onClick={() => navigate("/cities")}
+          >
+            Browse cities
+          </button>
+        </div>
+      )}
+
+      {weatherData.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 min-[681px]:grid-cols-2 min-[1051px]:grid-cols-4">
+          {weatherData.map(({ cityName, weather, error: itemError }) => (
+            <article
+              key={cityName}
+              className="overflow-hidden rounded-[18px] border border-[var(--border)] bg-[var(--panel)]"
+            >
+              {weather ? (
                 <button
-                  className="mt-2 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
-                  onClick={() => {
-                    const nextFavorites = guestFavorites.filter(
-                      (favorite) => favorite.toLowerCase() !== city.toLowerCase()
-                    );
-                    localStorage.setItem(
-                      "weatherworld_guest_favorites",
-                      JSON.stringify(nextFavorites)
-                    );
-                    setGuestFavorites(nextFavorites);
-                    setGuestWeather(null);
-                  }}
+                  type="button"
+                  className="w-full p-5 text-left"
+                  onClick={() =>
+                    navigate(`/city/${encodeURIComponent(cityName)}`)
+                  }
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold">{cityName}</p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">
+                        {weather.location.country}
+                      </p>
+                    </div>
+                    <Heart
+                      size={20}
+                      fill="#ef8dad"
+                      className="text-[#ef8dad]"
+                    />
+                  </div>
+
+                  <div className="mt-5 flex items-end justify-between">
+                    <div className="text-[42px] font-extrabold leading-none">
+                      {formatTemperature(weather.current.temperature_2m, unit)}
+                      {unit}
+                    </div>
+                    <span className="text-[38px]">
+                      {getWeatherEmoji(weather.current.weather_code)}
+                    </span>
+                  </div>
+
+                  <p className="mt-4 text-sm font-semibold">
+                    {getWeatherDescription(weather.current.weather_code)}
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">
+                    Humidity {weather.current.relative_humidity_2m}% ·{" "}
+                    Wind {Math.round(weather.current.wind_speed_10m)} km/h
+                  </p>
+                </button>
+              ) : (
+                <div className="p-5">
+                  <p className="font-bold">{cityName}</p>
+                  <p className="mt-2 text-sm text-[var(--muted)]">
+                    {itemError || "Weather unavailable"}
+                  </p>
+                </div>
+              )}
+
+              <div className="border-t border-[var(--border)] p-3">
+                <button
+                  type="button"
+                  onClick={() => removeFavorite(cityName)}
+                  className="flex min-h-[38px] w-full items-center justify-center gap-2 rounded-[10px] border border-[var(--border)] text-sm font-semibold text-[var(--muted)]"
                 >
                   <Trash2 size={15} />
-                  Remove
+                  Remove favorite
                 </button>
               </div>
-            ))}
-          </div>
-
-          {guestFavorites.length > 0 && (
-            <button
-              className="mt-[14px] inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
-              onClick={() => {
-                localStorage.removeItem("weatherworld_guest_favorites");
-                setGuestFavorites([]);
-                setGuestWeather(null);
-              }}
-            >
-              <Trash2 size={16} />
-              Clear guest favorites
-            </button>
-          )}
-        </section>
+            </article>
+          ))}
+        </div>
       )}
-
-      {token && (
-        <section className="min-w-0 rounded-[20px] bg-[#111d30] p-4 sm:p-5">
-          {favorites.length === 0 && !loading ? (
-            <div className="flex flex-col items-center p-7 text-center text-[#91a5bf]">
-              <Heart size={28} />
-              <p>No saved favorites yet.</p>
-            </div>
-          ) : favorites.length > 0 && (
-            <>
-              {favorites.some((favorite) => !favoriteWeather[favorite.id]) && (
-                <Loader message="Loading favorite weather..." />
-              )}
-              <div className="mt-[18px] grid grid-cols-1 gap-[14px] min-[681px]:grid-cols-2 min-[1051px]:grid-cols-4">
-                {favorites.map((favorite) => {
-                  const weatherResult = favoriteWeather[favorite.id];
-
-                  return (
-                    <div key={favorite.id}>
-                      {weatherResult?.weather && (
-                        <WeatherCard
-                          weather={weatherResult.weather}
-                          favorite
-                          onSelect={() =>
-                            navigate(`/city/${encodeURIComponent(favorite.city_name)}`)
-                          }
-                        />
-                      )}
-                      {weatherResult?.error && (
-                        <ErrorMessage message={weatherResult.error} />
-                      )}
-
-                      <button
-                        className="mt-2 inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl border border-[#293a52] px-3 text-[#e7edf7] hover:border-[#ffa52f]"
-                        onClick={() => remove(favorite.id)}
-                      >
-                        <Trash2 size={15} />
-                        Remove
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </section>
-      )}
-    </>
+    </section>
   );
 }

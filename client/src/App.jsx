@@ -16,6 +16,9 @@ import MapView from "./views/MapView";
 import FavoritesView from "./views/FavoritesView";
 import AlertsView from "./views/AlertsView";
 import NotFoundView from "./views/NotFoundView";
+import SettingsView from "./views/SettingsView";
+import AboutView from "./views/AboutView";
+import CitiesView from "./views/CitiesView";
 
 import useGeolocation from "./controllers/useGeolocation";
 
@@ -82,6 +85,11 @@ function AppLayout() {
             />
 
             <Route
+              path="/cities"
+              element={<CitiesView />}
+            />
+
+            <Route
               path="/map"
               element={<MapView />}
             />
@@ -93,22 +101,12 @@ function AppLayout() {
 
             <Route
               path="/settings"
-              element={
-                <div className="min-h-[420px] rounded-[20px] bg-[var(--panel)] p-6">
-                  <h1 className="text-2xl font-bold">Settings</h1>
-                  <p className="mt-3 text-[var(--muted)]">Use the top controls to change units and appearance.</p>
-                </div>
-              }
+              element={<SettingsView />}
             />
 
             <Route
               path="/about"
-              element={
-                <div className="min-h-[420px] rounded-[20px] bg-[var(--panel)] p-6">
-                  <h1 className="text-2xl font-bold">About WeatherWorld</h1>
-                  <p className="mt-3 text-[var(--muted)]">Current conditions and forecasts for cities around the world.</p>
-                </div>
-              }
+              element={<AboutView />}
             />
 
             <Route
