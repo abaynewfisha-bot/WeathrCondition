@@ -44,4 +44,12 @@ async function list() {
   return result.rows;
 }
 
-module.exports = { upsert, search, list };
+async function findById(id) {
+  const result = await query(
+    "SELECT * FROM cities WHERE id = $1",
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
+module.exports = { upsert, search, list, findById };

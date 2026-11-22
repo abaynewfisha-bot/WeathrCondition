@@ -1,20 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, Languages, MapPin, Palette, Thermometer } from "lucide-react";
 
 import { useTheme } from "../context/ThemeContext";
 import { useUnit } from "../context/UnitContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
+import { getSettings, updateSettings } from "../services/settingsService";
 
 export default function SettingsView() {
   const { unit, setUnit } = useUnit();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
+  const { user } = useAuth();
+  const [saveMessage, setSaveMessage] = useState("");
   const [notifications, setNotifications] = useState(
     () => localStorage.getItem("weatherworld_notifications") !== "off"
   );
   const [locationEnabled, setLocationEnabled] = useState(
     () => localStorage.getItem("weatherworld_location") !== "off"
   );
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    getSettings()
+      .then(({ settings }) => {
+        if (!active || !settings) return;
+        setUnit(settings.temperature_unit === "fahrenheit" ? "F" : "C");
+        setTheme(settings.theme);
+        if (settings.language) setLanguage(
+          settings.language === "fr" ? "French" :
+          settings.language === "ar" ? "Arabic" :
+          settings.language === "am" ? "Amharic" : "English"
+        );
+        setNotifications(Boolean(settings.notifications_enabled));
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user, setUnit, setTheme, setLanguage]);
+
+  async function savePreferences() {
+    setSaveMessage("");
+    if (!user) {
+      setSaveMessage("Preferences saved locally.");
+      return;
+    }
+
+    try {
+      await updateSettings({
+        temperature_unit: unit === "F" ? "fahrenheit" : "celsius",
+        theme,
+        language: language === "French" ? "fr" : language === "Arabic" ? "ar" : language === "Amharic" ? "am" : "en",
+        notifications_enabled: notifications,
+        weather_alerts: notifications
+      });
+      setSaveMessage("Preferences saved.");
+    } catch (error) {
+      setSaveMessage(error.response?.data?.error || "Unable to save preferences.");
+    }
+  }
 
   function saveNotifications(enabled) {
     setNotifications(enabled);
@@ -67,8 +113,8 @@ export default function SettingsView() {
             <Palette size={20} className="text-[#78aef1]" />
             {t("appearance")}
           </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {["dark", "light"].map((value) => (
+          <div className="grid grid-cols-3 gap-3">
+            {["dark", "light", "system"].map((value) => (
               <button
                 key={value}
                 className={`rounded-[12px] border px-4 py-3 font-bold capitalize transition ${
@@ -78,7 +124,7 @@ export default function SettingsView() {
                 }`}
                 onClick={() => setTheme(value)}
               >
-                {value === "dark" ? t("darkTheme") : t("lightTheme")}
+                {value === "dark" ? t("darkTheme") : value === "light" ? t("lightTheme") : "System"}
               </button>
             ))}
           </div>
@@ -117,6 +163,16 @@ export default function SettingsView() {
           enabled={locationEnabled}
           onToggle={saveLocation}
         />
+      </div>
+      <div className="mt-5 flex items-center justify-end gap-3">
+        {saveMessage && <p className="text-sm text-[var(--muted)]" role="status">{saveMessage}</p>}
+        <button
+          type="button"
+          onClick={savePreferences}
+          className="min-h-[44px] rounded-[12px] border-0 bg-[linear-gradient(135deg,#4e82df,#806cbf)] px-5 font-bold text-white"
+        >
+          Save preferences
+        </button>
       </div>
     </section>
   );

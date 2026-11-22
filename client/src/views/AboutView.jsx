@@ -1,8 +1,23 @@
 import { CloudSun, Code2, Mail, Map, ShieldCheck } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { useEffect, useState } from "react";
+import { getAbout } from "../services/settingsService";
 
 export default function AboutView() {
   const { t } = useLanguage();
+  const [about, setAbout] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    getAbout()
+      .then((result) => {
+        if (active) setAbout(result);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
   const features = [
     "Real-time weather conditions",
     "Hourly and 7-day forecasts",
@@ -20,16 +35,15 @@ export default function AboutView() {
             <CloudSun size={44} className="text-[#ffd45a]" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold">WeatherWorld</h1>
+            <h1 className="text-3xl font-extrabold">{about?.app_name || "WeatherWorld"}</h1>
             <p className="mt-1 text-sm text-[#e2eaff]">
               Know the Weather, Plan Your Day
             </p>
           </div>
         </div>
         <p className="mt-6 max-w-3xl leading-7 text-[#edf3ff]">
-          WeatherWorld is a modern weather dashboard that provides clear,
-          current information to help you plan activities, travel safely,
-          and stay informed wherever you are.
+          {about?.description ||
+            "WeatherWorld is a modern weather dashboard that provides clear, current information to help you plan activities, travel safely, and stay informed wherever you are."}
         </p>
       </div>
 
@@ -77,7 +91,7 @@ export default function AboutView() {
           </h2>
           <dl className="grid grid-cols-[120px_1fr] gap-3 text-sm">
             <dt className="text-[var(--muted)]">Version</dt>
-            <dd className="font-semibold">1.0.0</dd>
+            <dd className="font-semibold">{about?.version || "1.0.0"}</dd>
             <dt className="text-[var(--muted)]">Data source</dt>
             <dd className="font-semibold">Open-Meteo</dd>
             <dt className="text-[var(--muted)]">Status</dt>
@@ -94,10 +108,10 @@ export default function AboutView() {
             For support or feedback, contact the WeatherWorld development team.
           </p>
           <a
-            href="mailto:support@weatherworld.app"
+            href={`mailto:${about?.contact_email || "support@weatherworld.app"}`}
             className="mt-4 inline-flex min-h-[42px] items-center rounded-[12px] bg-[linear-gradient(135deg,#4c82dd,#7d69b8)] px-4 text-sm font-bold text-white no-underline"
           >
-            support@weatherworld.app
+            {about?.contact_email || "support@weatherworld.app"}
           </a>
         </div>
       </div>

@@ -29,11 +29,25 @@ async function getWeather(cityName) {
     return payload;
   }
 
-  const weather = await provider.getWeatherByCoordinates(match);
+  try {
+    const weather = await provider.getWeatherByCoordinates(match);
+    await WeatherReading.save(city.id, weather);
+    return weather;
+  } catch (error) {
+    if (cached) {
+      const payload =
+        typeof cached.payload === "string"
+          ? JSON.parse(cached.payload)
+          : cached.payload;
 
-  await WeatherReading.save(city.id, weather);
-
-  return weather;
+      return {
+        ...payload,
+        stale: true,
+        cached_at: cached.fetched_at
+      };
+    }
+    throw error;
+  }
 }
 
 module.exports = { getWeather };

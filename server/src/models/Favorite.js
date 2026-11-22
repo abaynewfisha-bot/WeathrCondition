@@ -36,7 +36,8 @@ async function add(userId, cityId) {
 async function remove(favoriteId, userId) {
   const result = await query(
     `DELETE FROM favorites
-     WHERE id = $1 AND user_id = $2
+     WHERE user_id = $2
+       AND (id = $1 OR city_id = $1)
      RETURNING id`,
     [favoriteId, userId]
   );
@@ -44,4 +45,12 @@ async function remove(favoriteId, userId) {
   return result.rows[0] || null;
 }
 
-module.exports = { listForUser, add, remove };
+async function findByUserAndCity(userId, cityId) {
+  const result = await query(
+    "SELECT id FROM favorites WHERE user_id = $1 AND city_id = $2",
+    [userId, cityId]
+  );
+  return result.rows[0] || null;
+}
+
+module.exports = { listForUser, add, remove, findByUserAndCity };

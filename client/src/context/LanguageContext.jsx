@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const LanguageContext = createContext(null);
 
@@ -103,9 +103,9 @@ export function LanguageProvider({ children }) {
     document.documentElement.dir = value === "Arabic" ? "rtl" : "ltr";
   }, [language]);
 
-  const setLanguage = (value) => {
+  const setLanguage = useCallback((value) => {
     setLanguageState(translations[value] ? value : "English");
-  };
+  }, []);
 
   const value = useMemo(() => ({
     language,

@@ -19,6 +19,8 @@ import NotFoundView from "./views/NotFoundView";
 import SettingsView from "./views/SettingsView";
 import AboutView from "./views/AboutView";
 import CitiesView from "./views/CitiesView";
+import LoginView from "./views/LoginView";
+import RegisterView from "./views/RegisterView";
 
 import useGeolocation from "./controllers/useGeolocation";
 import { getWeatherByCoordinates } from "./services/weatherService";
@@ -112,6 +114,8 @@ function AppLayout() {
           )}
 
           <Routes>
+            <Route path="/login" element={<LoginView />} />
+            <Route path="/register" element={<RegisterView />} />
             <Route
               path="/"
               element={

@@ -9,7 +9,11 @@ export function ThemeProvider({ children }) {
   );
 
   useEffect(() => {
-    document.body.classList.toggle("light-theme", theme === "light");
+    const resolvedTheme =
+      theme === "system"
+        ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
+        : theme;
+    document.body.classList.toggle("light-theme", resolvedTheme === "light");
     localStorage.setItem("weatherworld_theme", theme);
   }, [theme]);
 

@@ -19,5 +19,7 @@ router.use("/weather", require("./weatherRoutes"));
 router.use("/cities", require("./cityRoutes"));
 router.use("/auth", require("./authRoutes"));
 router.use("/favorites", require("./favoriteRoutes"));
+router.use("/settings", require("./settingsRoutes"));
+router.use("/about", require("./aboutRoutes"));
 
 module.exports = router;

@@ -26,3 +26,15 @@ exports.list = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getById = async (req, res, next) => {
+  try {
+    const city = await City.findById(req.params.id);
+    if (!city) {
+      return res.status(404).json({ error: "City not found." });
+    }
+    res.json({ city });
+  } catch (error) {
+    next(error);
+  }
+};

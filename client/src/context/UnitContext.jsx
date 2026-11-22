@@ -1,10 +1,18 @@
 // UnitContext
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 const UnitContext = createContext(null);
 
 export function UnitProvider({ children }) {
-  const [unit, setUnit] = useState("C");
+  const [unit, setUnitState] = useState(
+    () => localStorage.getItem("weatherworld_unit") || "C"
+  );
+
+  const setUnit = useCallback((value) => {
+    const next = value === "F" ? "F" : "C";
+    setUnitState(next);
+    localStorage.setItem("weatherworld_unit", next);
+  }, []);
 
   const toggleUnit = () => {
     setUnit((current) => current === "C" ? "F" : "C");

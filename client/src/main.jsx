@@ -8,15 +8,18 @@ import App from "./App";
 import { ThemeProvider } from "./context/ThemeContext";
 import { UnitProvider } from "./context/UnitContext";
 import { LanguageProvider } from "./context/LanguageContext";
+import { AuthProvider } from "./context/AuthContext";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
       <UnitProvider>
         <LanguageProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <AuthProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </AuthProvider>
         </LanguageProvider>
       </UnitProvider>
     </ThemeProvider>

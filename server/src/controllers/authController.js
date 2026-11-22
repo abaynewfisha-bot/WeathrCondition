@@ -94,3 +94,21 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.me = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.logout = (req, res) => {
+  res.json({ success: true, message: "Logged out successfully." });
+};

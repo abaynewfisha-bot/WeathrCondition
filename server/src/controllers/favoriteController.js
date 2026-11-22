@@ -37,6 +37,12 @@ exports.add = async (req, res, next) => {
     }
 
     const city = await City.upsert(match);
+    const existing = await Favorite.findByUserAndCity(req.user.id, city.id);
+    if (existing) {
+      return res.status(409).json({
+        error: "City is already in your favorites."
+      });
+    }
     const favorite = await Favorite.add(req.user.id, city.id);
 
     res.status(201).json({ favorite });
