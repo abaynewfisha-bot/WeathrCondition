@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bell, Languages, MapPin, Palette, Thermometer } from "lucide-react";
 
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/useTheme";
 import { useUnit } from "../context/UnitContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";

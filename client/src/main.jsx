@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import "./index.css";
 
 import App from "./App";
-import { ThemeProvider } from "./context/ThemeContext";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { UnitProvider } from "./context/UnitContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
