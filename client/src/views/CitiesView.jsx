@@ -10,6 +10,7 @@ import { useUnit } from "../context/UnitContext";
 import { formatTemperature } from "../utils/convertTemp";
 import { getWeatherDescription, getWeatherEmoji } from "../utils/weatherCodes";
 import { useLanguage } from "../context/LanguageContext";
+import useFavorites from "../controllers/useFavorites";
 
 const STARTER_CITIES = ["Nairobi", "London", "Tokyo", "Dubai"];
 
@@ -17,11 +18,13 @@ export default function CitiesView() {
   const navigate = useNavigate();
   const { unit } = useUnit();
   const { t } = useLanguage();
+  const { favorites: savedFavorites, add: addSavedFavorite, remove: removeSavedFavorite } = useFavorites();
+  const token = localStorage.getItem("weatherworld_token");
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [favoriteError, setFavoriteError] = useState("");
-  const [favorites, setFavorites] = useState(() => {
+  const [guestFavorites, setGuestFavorites] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("weatherworld_guest_favorites") || "[]");
     } catch {
@@ -77,12 +80,34 @@ export default function CitiesView() {
     }
   }
 
-  function toggleFavorite(cityName) {
+  async function toggleFavorite(cityName, country) {
+    setFavoriteError("");
+
+    if (token) {
+      const favorite = savedFavorites.find(
+        (item) => item.city_name.toLowerCase() === cityName.toLowerCase()
+      );
+
+      try {
+        if (favorite) {
+          await removeSavedFavorite(favorite.id);
+        } else {
+          await addSavedFavorite(cityName, country);
+        }
+      } catch (err) {
+        setFavoriteError(
+          err.response?.data?.error || `Unable to update favorite ${cityName}.`
+        );
+      }
+      return;
+    }
+
     const key = cityName.toLowerCase();
-    setFavorites((current) => {
-      const next = current.includes(key)
-        ? current.filter((item) => item !== key)
-        : [...current, key];
+    setGuestFavorites((current) => {
+      const exists = current.some((item) => item.toLowerCase() === key);
+      const next = exists
+        ? current.filter((item) => item.toLowerCase() !== key)
+        : [...current, cityName];
       localStorage.setItem(
         "weatherworld_guest_favorites",
         JSON.stringify(next)
@@ -118,7 +143,13 @@ export default function CitiesView() {
         <div className="mt-4 grid grid-cols-1 gap-4 min-[681px]:grid-cols-2 min-[1051px]:grid-cols-4">
           {cities.map((item) => {
             const cityName = item.location.name;
-            const favorite = favorites.includes(cityName.toLowerCase());
+            const favorite = token
+              ? savedFavorites.some(
+                  (item) => item.city_name.toLowerCase() === cityName.toLowerCase()
+                )
+              : guestFavorites.some(
+                  (item) => item.toLowerCase() === cityName.toLowerCase()
+                );
 
             return (
               <article
@@ -139,7 +170,7 @@ export default function CitiesView() {
                     type="button"
                     title={favorite ? "Remove favorite" : "Add favorite"}
                     aria-label={`Toggle ${cityName} favorite`}
-                    onClick={() => toggleFavorite(cityName)}
+                    onClick={() => void toggleFavorite(cityName, item.location.country)}
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)]"
                   >
                     <Heart
